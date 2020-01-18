@@ -1,5 +1,7 @@
 {
-    "require": {
-        "botman/botman": "^2.5"
-    }
+  "require": {
+    "botman/botman": "^2.5",
+    "botman/driver-telegram": "^1.5",
+    "ext-imagick": "*"
+  }
 }
