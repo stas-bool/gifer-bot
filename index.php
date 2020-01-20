@@ -78,13 +78,16 @@ $textToGif = function (BotMan $bot, $text)
     }
     $animation->setImageDelay(300);
 
-    $gifFile = "/tmp/{$bot->getUser()->getId()}.gif";
-    $animation->writeImages($gifFile, true);
+    $gifFile = "{$bot->getUser()->getId()}.gif";
+    $animation->writeImages('./'.$gifFile, true);
     $animation->clear();
 
-    $attachment = new Image($gifFile);
+    $attachment = new Image('https://bot.biche-ool.ru/'.$gifFile, [
+        'custom_payload' => true,
+    ]);
     $message = OutgoingMessage::create()->withAttachment($attachment);
     $bot->reply($message);
+    unlink('./'.$gifFile);
 };
 DriverManager::loadDriver(TelegramDriver::class);
 
