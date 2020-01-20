@@ -7,6 +7,7 @@ use BotMan\BotMan\Messages\Attachments\Image;
 use BotMan\BotMan\Messages\Outgoing\OutgoingMessage;
 use BotMan\Drivers\Telegram\TelegramDriver;
 
+require_once __DIR__ . '/vendor/autoload.php';
 $config = [
     // Your driver-specific configuration
      "telegram" => [
