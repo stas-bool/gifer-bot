@@ -1,19 +1,18 @@
 <?php
 
-$text = $argv[1];
-//$text = "Google объявил, что планирует добавить в библиотеку игрового стримингового сервиса Google Stadia более 120 игр в 2020 году, включая Cyberpunk 2077 и Watch Dogs Legion, среди которых будет 10 временно эксклюзивных (это значит, что вскоре игры появятся и на других платформах).";
-
+$text = 'Но обычно, если возникаеion->queryFonts();т необходимость использовать кастомный шрифт';
+$font = '/home/stas/.local/share/fonts/NotoSans-Regular.ttf';
 $animation = new Imagick();
 $animation->setFormat("gif");
 
-function calcWidth($text)
+function calcWidth($text, $font)
 {
-    $box = imagettfbbox(30, 0, '/usr/share/fonts/truetype/msttcorefonts/ariali.ttf', $text);
+    $box = imagettfbbox(20, 0, $font, $text);
     $width = abs($box[4] - $box[0]);
     return $width;
 }
 
-function splitText($text)
+function splitText($text, $font)
 {
     $words = explode(' ', $text);
     $row = '';
@@ -24,7 +23,7 @@ function splitText($text)
         // Убираем одно слово из начала текста
         $word = array_shift($words);
 
-        if (calcWidth("{$row}{$word} ") > 500) {
+        if (calcWidth("{$row}{$word} ", $font) > 650) {
             // Если ширина строки + слово > 500
             // То слово возвращаем обратно
             array_unshift($words, $word);
@@ -39,7 +38,7 @@ function splitText($text)
     return $totalText;
 }
 
-$formatedTextArray = splitText($text);
+$formatedTextArray = splitText($text, $font);
 $formatedText = implode("", $formatedTextArray);
 $textLength = mb_strlen($formatedText);
 
@@ -47,22 +46,21 @@ for ($end = 1; $end <= $textLength; $end++) {
     $image = new Imagick();
     $image->setResourceLimit(6, 1);
 
-
-    $image->newImage(500, 40 * count($formatedTextArray), new ImagickPixel('#FFEBEB'));
+    $image->newImage(500, 30 * count($formatedTextArray), new ImagickPixel('#FFEBEB'));
     $draw = new ImagickDraw();
     $draw->setFillColor(new ImagickPixel('black'));
-    $draw->setFontSize(30);
-    $draw->setFont('Arial');
+    $draw->setFontSize(20);
+    $draw->setFont($font);
 
     $textToImage = mb_substr($formatedText, 0, $end);
-    print "$end\t$textToImage\n";
-    $image->annotateImage($draw, 10, 30, 0, $textToImage);
+    $image->annotateImage($draw, 5, 20, 0, $textToImage);
     $image->setImageFormat('png');
     $image->roundCorners(5,5);
-//    $image->writeImage("/tmp/test-image{$end}.png");
     $animation->addImage($image);
     $animation->nextImage();
     $animation->setImageDelay(10);
+    $image->clear();
 }
 $animation->setImageDelay(300);
 $animation->writeImages("/tmp/test.gif", true);
+$animation->clear();
