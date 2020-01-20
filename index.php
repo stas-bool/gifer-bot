@@ -49,7 +49,7 @@ function splitText($text, $font)
 
 $textToGif = function (BotMan $bot, $text)
 {
-    $font = '/home/stas/.local/share/fonts/NotoSans-Regular.ttf';
+    $font = '/var/www/html/bot/NotoSans-Regular.ttf';
     $animation = new Imagick();
     $animation->setFormat("gif");
 
@@ -93,4 +93,4 @@ $botman = BotManFactory::create($config);
 
 $botman->hears('(.*)', $textToGif);
 
-//$botman->reply();
+$botman->listen();
