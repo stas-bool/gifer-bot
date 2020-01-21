@@ -126,32 +126,15 @@ $botman->hears('/start', function (BotMan $bot) {
     die();
 });
 $botman->hears('/settings', function (BotMan $bot) {
-    $question = Question::create('')
+    $question = Question::create('Настройки')
+        //->fallback('Unable to create a new database')
+        //->callbackId('create_database')
         ->addButtons([
             Button::create('Скорость')->value('/set_speed'),
             Button::create('Цвет фона')->value('/set_background_color'),
             Button::create('Цвет текста')->value('/set_font_color'),
         ]);
-
-    $bot->ask($question, function (Answer $answer) use ($bot) {
-        // Detect if button was clicked:
-        if ($answer->isInteractiveMessageReply()) {
-            $selectedValue = $answer->getValue(); // will be either 'yes' or 'no'
-            $selectedText = $answer->getText(); // will be either 'Of course' or 'Hell no!'
-            $command = $answer->getValue();
-            switch ($command) {
-                case '/set_speed':
-                    $bot->reply('Настройка скорости');
-                    break;
-                case '/set_background_color':
-                    $bot->reply('Настройка фона');
-                    break;
-                case '/set_font_color':
-                    $bot->reply('Настройка цвета текста');
-                    break;
-            }
-        }
-    });
+    $bot->ask($question, function (Answer $answer) {});
     die();
 });
 $botman->hears('(.*)', $textToGif);
