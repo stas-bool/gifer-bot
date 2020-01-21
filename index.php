@@ -127,8 +127,6 @@ $botman->hears('/start', function (BotMan $bot) {
 });
 $botman->hears('/settings', function (BotMan $bot) {
     $question = Question::create('Настройки')
-        //->fallback('Unable to create a new database')
-        //->callbackId('create_database')
         ->addButtons([
             Button::create('Скорость')->value('/set_speed'),
             Button::create('Цвет фона')->value('/set_background_color'),
@@ -136,6 +134,9 @@ $botman->hears('/settings', function (BotMan $bot) {
         ]);
     $bot->ask($question, function (Answer $answer) {});
     die();
+});
+$botman->hears('/set_speed', function (BotMan $bot) {
+    $bot->startConversation(new SetSpeedConversation());
 });
 $botman->hears('(.*)', $textToGif);
 $botman->listen();
