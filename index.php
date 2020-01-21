@@ -3,6 +3,7 @@
 use BotMan\BotMan\BotMan;
 use BotMan\BotMan\BotManFactory;
 use BotMan\BotMan\Drivers\DriverManager;
+use BotMan\BotMan\Messages\Incoming\Answer;
 use BotMan\Drivers\Telegram\Extensions\Keyboard;
 use BotMan\Drivers\Telegram\Extensions\KeyboardButton;
 use BotMan\Drivers\Telegram\TelegramDriver;
@@ -127,7 +128,10 @@ $botman->hears('/settings', function (BotMan $bot) {
         ->oneTimeKeyboard()
         ->addRow(KeyboardButton::create('Скорость'))
         ->toArray();
-    $bot->reply('', $keyboard);
+    $bot->ask('', function (Answer $answer) {
+
+    }, $keyboard);
+    die();
 });
 $botman->hears('(.*)', $textToGif);
 $botman->listen();
