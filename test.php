@@ -1,66 +1,28 @@
 <?php
 
-$text = 'Но обычно, если возникаеion->queryFonts();т необходимость использовать кастомный шрифт';
-$font = '/home/stas/.local/share/fonts/NotoSans-Regular.ttf';
-$animation = new Imagick();
-$animation->setFormat("gif");
 
-function calcWidth($text, $font)
-{
-    $box = imagettfbbox(20, 0, $font, $text);
-    $width = abs($box[4] - $box[0]);
-    return $width;
+require_once __DIR__ . '/vendor/autoload.php';
+
+function toMultiPart(array $arr) {
+    $result = [];
+    array_walk($arr, function($value, $key) use(&$result) {
+        $result[] = ['name' => $key, 'contents' => $value];
+    });
+    return $result;
 }
 
-function splitText($text, $font)
-{
-    $words = explode(' ', $text);
-    $row = '';
-    $totalText = [];
-
-    // Пока не кончатся слова в тексте
-    while (count($words) !== 0) {
-        // Убираем одно слово из начала текста
-        $word = array_shift($words);
-
-        if (calcWidth("{$row}{$word} ", $font) > 650) {
-            // Если ширина строки + слово > 500
-            // То слово возвращаем обратно
-            array_unshift($words, $word);
-            // и добавляем конец строки в массив
-            $totalText[] = $row.PHP_EOL;
-            $row = '';
-        } else {
-            $row .= $word . " ";
-        }
-    }
-    $totalText[] = $row;
-    return $totalText;
-}
-
-$formatedTextArray = splitText($text, $font);
-$formatedText = implode("", $formatedTextArray);
-$textLength = mb_strlen($formatedText);
-
-for ($end = 1; $end <= $textLength; $end++) {
-    $image = new Imagick();
-    $image->setResourceLimit(6, 1);
-
-    $image->newImage(500, 30 * count($formatedTextArray), new ImagickPixel('#FFEBEB'));
-    $draw = new ImagickDraw();
-    $draw->setFillColor(new ImagickPixel('black'));
-    $draw->setFontSize(20);
-    $draw->setFont($font);
-
-    $textToImage = mb_substr($formatedText, 0, $end);
-    $image->annotateImage($draw, 5, 20, 0, $textToImage);
-    $image->setImageFormat('png');
-    $image->roundCorners(5,5);
-    $animation->addImage($image);
-    $animation->nextImage();
-    $animation->setImageDelay(10);
-    $image->clear();
-}
-$animation->setImageDelay(300);
-$animation->writeImages("/tmp/test.gif", true);
-$animation->clear();
+$client = new \GuzzleHttp\Client([
+    'proxy' => 'socks5://localhost:8888',
+    'base_uri' => 'https://api.telegram.org/bot887931185:AAEu_F46a_nR87kKeBRN_tUIvRohO4XklSw/'
+]);
+$result = $client->request(
+    'POST',
+    'sendAnimation',
+    [
+        'multipart' => toMultiPart([
+            'chat_id' => 132763295,
+            'animation' => fopen('/tmp/text.gif', 'r')
+        ])
+    ]
+);
+var_dump($result);

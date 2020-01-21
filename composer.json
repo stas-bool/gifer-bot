@@ -4,6 +4,7 @@
     "botman/botman": "^2.5",
     "botman/driver-telegram": "^1.5",
     "ext-imagick": "*",
-    "ext-gd": "*"
+    "ext-gd": "*",
+    "guzzlehttp/guzzle": "^6.5"
   }
 }

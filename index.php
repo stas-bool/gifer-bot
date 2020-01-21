@@ -44,6 +44,29 @@ function splitText($text, $font)
     $totalText[] = $row;
     return $totalText;
 }
+function toMultiPart(array $arr) {
+    $result = [];
+    array_walk($arr, function($value, $key) use(&$result) {
+        $result[] = ['name' => $key, 'contents' => $value];
+    });
+    return $result;
+}
+function sendGif($gifFile)
+{
+    $client = new \GuzzleHttp\Client([
+        'base_uri' => 'https://api.telegram.org/bot887931185:AAEu_F46a_nR87kKeBRN_tUIvRohO4XklSw/'
+    ]);
+    $result = $client->request(
+        'POST',
+        'sendAnimation',
+        [
+            'multipart' => toMultiPart([
+                'chat_id' => 132763295,
+                'animation' => fopen($gifFile, 'r')
+            ])
+        ]
+    );
+}
 
 $textToGif = function (BotMan $bot, $text)
 {
