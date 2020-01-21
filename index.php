@@ -71,6 +71,11 @@ function sendGif($chatId, $gifFile)
 
 $textToGif = function (BotMan $bot, $text)
 {
+    if (strlen($text) > 500) {
+        $bot->reply("Слииииишком длинный текст. Ограничение 500 символов.\n\"Краткость – сестра таланта\"🄯 А. П. Чехов.");
+        die();
+    }
+    $bot->reply('Обрабатываю');
     $font = '/var/www/html/bot/NotoSans-Regular.ttf';
     $animation = new Imagick();
     $animation->setFormat("gif");
@@ -108,5 +113,9 @@ $textToGif = function (BotMan $bot, $text)
 };
 DriverManager::loadDriver(TelegramDriver::class);
 $botman = BotManFactory::create($config);
+$botman->hears('/start', function (BotMan $bot) {
+    $bot->reply('Я умею конвертировать текст в гифку.
+    Emoji пока не поддерживаются, но в ближайшее время я что-нибудь с этим сделаю.');
+});
 $botman->hears('(.*)', $textToGif);
 $botman->listen();
