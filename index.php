@@ -72,7 +72,7 @@ function sendGif($chatId, $gifFile)
 $textToGif = function (BotMan $bot, $text)
 {
     if (strlen($text) > 300) {
-        $bot->reply("Слииииишком длинный текст. Ограничение 500 символов.");
+        $bot->reply("Слииииишком длинный текст. Ограничение 300 символов.");
         die();
     }
     $bot->reply('Обрабатываю');
