@@ -4,6 +4,7 @@ use BotMan\BotMan\BotMan;
 use BotMan\BotMan\BotManFactory;
 use BotMan\BotMan\Drivers\DriverManager;
 use BotMan\Drivers\Telegram\TelegramDriver;
+use GuzzleHttp\Client;
 
 require_once __DIR__ . '/vendor/autoload.php';
 $config = [
@@ -51,9 +52,9 @@ function toMultiPart(array $arr) {
     });
     return $result;
 }
-function sendGif($gifFile)
+function sendGif($chatId, $gifFile)
 {
-    $client = new \GuzzleHttp\Client([
+    $client = new Client([
         'base_uri' => 'https://api.telegram.org/bot887931185:AAEu_F46a_nR87kKeBRN_tUIvRohO4XklSw/'
     ]);
     $result = $client->request(
@@ -61,7 +62,7 @@ function sendGif($gifFile)
         'sendAnimation',
         [
             'multipart' => toMultiPart([
-                'chat_id' => 132763295,
+                'chat_id' => $chatId,
                 'animation' => fopen($gifFile, 'r')
             ])
         ]
@@ -103,10 +104,7 @@ $textToGif = function (BotMan $bot, $text)
     $animation->writeImages($gifFile, true);
     $animation->clear();
 
-    $bot->sendRequest('sendAnimation', [
-        'animation' => "@{$gifFile}",
-        'chat_id' => $bot->getUser()->getId()
-    ]);
+    sendGif($bot->getUser()->getId(), $gifFile);
 };
 DriverManager::loadDriver(TelegramDriver::class);
 $botman = BotManFactory::create($config);
