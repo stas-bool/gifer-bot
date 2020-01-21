@@ -110,12 +110,13 @@ $textToGif = function (BotMan $bot, $text)
     $animation->clear();
 
     sendGif($bot->getUser()->getId(), $gifFile);
+    die();
 };
 DriverManager::loadDriver(TelegramDriver::class);
 $botman = BotManFactory::create($config);
 $botman->hears('/start', function (BotMan $bot) {
-    $bot->reply('Я умею конвертировать текст в гифку.
-    Emoji пока не поддерживаются, но в ближайшее время я что-нибудь с этим сделаю.');
+    $bot->reply('Я умею конвертировать текст в гифку. Emoji пока не поддерживаются, но в ближайшее время я что-нибудь с этим сделаю.');
+    die();
 });
 $botman->hears('(.*)', $textToGif);
 $botman->listen();
