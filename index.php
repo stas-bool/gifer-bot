@@ -105,7 +105,7 @@ $textToGif = function (BotMan $bot, $text)
         $image->roundCorners(5,5);
         $animation->addImage($image);
         $animation->nextImage();
-        $animation->setImageDelay(10);
+        $animation->setImageDelay(15);
         $image->clear();
     }
     $animation->setImageDelay(300);
