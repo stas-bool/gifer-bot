@@ -3,8 +3,6 @@
 use BotMan\BotMan\BotMan;
 use BotMan\BotMan\BotManFactory;
 use BotMan\BotMan\Drivers\DriverManager;
-use BotMan\BotMan\Messages\Attachments\Image;
-use BotMan\BotMan\Messages\Outgoing\OutgoingMessage;
 use BotMan\Drivers\Telegram\TelegramDriver;
 
 require_once __DIR__ . '/vendor/autoload.php';
@@ -78,22 +76,16 @@ $textToGif = function (BotMan $bot, $text)
     }
     $animation->setImageDelay(300);
 
-    $gifFile = "{$bot->getUser()->getId()}.gif";
-    $animation->writeImages('./'.$gifFile, true);
+    $gifFile = "/tmp/{$bot->getUser()->getId()}.gif";
+    $animation->writeImages($gifFile, true);
     $animation->clear();
 
-    $attachment = new Image('https://bot.biche-ool.ru/'.$gifFile, [
-        'custom_payload' => true,
+    $bot->sendRequest('sendAnimation', [
+        'animation' => "@{$gifFile}",
+        'chat_id' => $bot->getUser()->getId()
     ]);
-    $message = OutgoingMessage::create()->withAttachment($attachment);
-    $bot->reply($message);
-    unlink('./'.$gifFile);
 };
 DriverManager::loadDriver(TelegramDriver::class);
-
 $botman = BotManFactory::create($config);
-
-
 $botman->hears('(.*)', $textToGif);
-
 $botman->listen();
