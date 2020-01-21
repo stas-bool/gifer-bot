@@ -3,6 +3,8 @@
 use BotMan\BotMan\BotMan;
 use BotMan\BotMan\BotManFactory;
 use BotMan\BotMan\Drivers\DriverManager;
+use BotMan\Drivers\Telegram\Extensions\Keyboard;
+use BotMan\Drivers\Telegram\Extensions\KeyboardButton;
 use BotMan\Drivers\Telegram\TelegramDriver;
 use GuzzleHttp\Client;
 
@@ -118,6 +120,14 @@ $botman->hears('/start', function (BotMan $bot) {
     $bot->reply('Я умею конвертировать текст в гифку. Emoji пока не поддерживаются, но в ближайшее время я что-нибудь с этим сделаю');
     $bot->reply('Давай, напиши мне что-нибудь');
     die();
+});
+$botman->hears('/settings', function (BotMan $bot) {
+    $keyboard = Keyboard::create()
+        ->type(Keyboard::TYPE_KEYBOARD)
+        ->oneTimeKeyboard()
+        ->addRow(KeyboardButton::create('Скорость'))
+        ->toArray();
+    $bot->reply('', $keyboard);
 });
 $botman->hears('(.*)', $textToGif);
 $botman->listen();
