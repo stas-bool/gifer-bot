@@ -20,6 +20,7 @@ class SetSpeedConversation extends Conversation
             }
 
         });
+        die();
     }
     public function run()
     {

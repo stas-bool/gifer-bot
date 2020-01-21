@@ -131,6 +131,7 @@ $botman->hears('/settings', function (BotMan $bot) {
             Button::create('Скорость')->value('/set_speed'),
             Button::create('Цвет фона')->value('/set_background_color'),
             Button::create('Цвет текста')->value('/set_font_color'),
+
         ]);
     $bot->ask($question, function (Answer $answer) {});
     die();
