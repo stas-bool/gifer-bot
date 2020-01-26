@@ -22,6 +22,8 @@ $config = [
 ];
 DriverManager::loadDriver(TelegramDriver::class);
 $botman = BotManFactory::create($config);
+$appConfig = Config::load($botman->getUser()->getId());
+$appConfig->save();
 
 function calcWidth($text, $font)
 {

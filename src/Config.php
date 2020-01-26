@@ -76,6 +76,7 @@ class Config
             'font_color' => $this->fontColor,
         ];
         $db = new DBConnect();
-        $result = $db->saveConfig($this->userId, json_encode($config));
+        $db->saveConfig($this->userId, json_encode($config));
+        return $this;
     }
 }
