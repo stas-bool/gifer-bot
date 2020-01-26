@@ -56,7 +56,7 @@ class Config
         $config = $db->getConfigByUserId($userId);
         if (!$config) {
             $config = [
-                'speed' => 3,
+                'speed' => 5,
                 'bg_color' => '#FFEBEB',
                 'font_color' => 'black'
             ];
