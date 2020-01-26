@@ -70,7 +70,7 @@ function sendGif($chatId, $gifFile)
         'POST',
         'sendAnimation',
         [
-            'proxy' => 'socks5://127.0.0.1:8888',
+//            'proxy' => 'socks5://127.0.0.1:8888',
             'multipart' => toMultiPart([
                 'chat_id' => $chatId,
                 'animation' => fopen($gifFile, 'r')
