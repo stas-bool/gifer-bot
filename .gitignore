@@ -3,3 +3,4 @@ vendor
 *.swp
 *.un~
 *.gif
+/gifer.sqlite3

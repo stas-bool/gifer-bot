@@ -7,7 +7,7 @@ class DBConnect
 
     public function __construct()
     {
-        $this->db = new SQLite3('/tmp/test.sqlite3');
+        $this->db = new SQLite3('gifer.sqlite3');
         $createTableSQL = 'CREATE TABLE IF NOT EXISTS configs_tbl (user_id INTEGER PRIMARY KEY, config TEXT)';
         $result = $this->db->exec($createTableSQL) or die($this->db->lastErrorMsg());
     }
