@@ -11,13 +11,16 @@ use BotMan\Drivers\Telegram\Extensions\KeyboardButton;
 use BotMan\Drivers\Telegram\TelegramDriver;
 use GuzzleHttp\Client;
 
+ini_set("xdebug.overload_var_dump", "off");
 require_once __DIR__ . '/vendor/autoload.php';
+require_once __DIR__ . '/src/Config.php';
 $config = [
     // Your driver-specific configuration
      "telegram" => [
         "token" => "887931185:AAEu_F46a_nR87kKeBRN_tUIvRohO4XklSw"
      ]
 ];
+$botman = BotManFactory::create($config);
 
 function calcWidth($text, $font)
 {
@@ -66,6 +69,7 @@ function sendGif($chatId, $gifFile)
         'POST',
         'sendAnimation',
         [
+            'proxy' => 'socks5://127.0.0.1:8888',
             'multipart' => toMultiPart([
                 'chat_id' => $chatId,
                 'animation' => fopen($gifFile, 'r')
@@ -81,7 +85,7 @@ $textToGif = function (BotMan $bot, $text)
         die();
     }
     $bot->reply('Обрабатываю');
-    $font = '/var/www/html/bot/NotoSans-Regular.ttf';
+    $font = __DIR__.'/NotoSans-Regular.ttf';
     $animation = new Imagick();
     $animation->setFormat("gif");
 
@@ -89,13 +93,14 @@ $textToGif = function (BotMan $bot, $text)
     $formatedText = implode("", $formatedTextArray);
     $textLength = mb_strlen($formatedText);
 
+    $appConfig = Config::load($bot->getUser()->getId());
     for ($end = 1; $end <= $textLength; $end++) {
         $image = new Imagick();
         $image->setResourceLimit(6, 1);
 
-        $image->newImage(500, 30 * count($formatedTextArray), new ImagickPixel('#FFEBEB'));
+        $image->newImage(500, 30 * count($formatedTextArray), new ImagickPixel($appConfig->getBgColor()));
         $draw = new ImagickDraw();
-        $draw->setFillColor(new ImagickPixel('black'));
+        $draw->setFillColor(new ImagickPixel($appConfig->getFontColor()));
         $draw->setFontSize(20);
         $draw->setFont($font);
 
@@ -105,7 +110,7 @@ $textToGif = function (BotMan $bot, $text)
         $image->roundCorners(5,5);
         $animation->addImage($image);
         $animation->nextImage();
-        $animation->setImageDelay(15);
+        $animation->setImageDelay($appConfig->getSpeed() * 10);
         $image->clear();
     }
     $animation->setImageDelay(300);
@@ -119,7 +124,6 @@ $textToGif = function (BotMan $bot, $text)
     die();
 };
 DriverManager::loadDriver(TelegramDriver::class);
-$botman = BotManFactory::create($config);
 $botman->hears('/start', function (BotMan $bot) {
     $bot->reply('Я умею конвертировать текст в гифку. Emoji пока не поддерживаются, но в ближайшее время я что-нибудь с этим сделаю');
     $bot->reply('Давай, напиши мне что-нибудь');
@@ -137,7 +141,10 @@ $botman->hears('/settings', function (BotMan $bot) {
     die();
 });
 $botman->hears('/set_speed', function (BotMan $bot) {
-    $bot->startConversation(new SetSpeedConversation());
+    $appConfig = Config::load($bot->getUser()->getId());
+    $appConfig->setSpeed(1)->save();
+    $bot->reply('Записал');
+    die();
 });
 $botman->hears('(.*)', $textToGif);
 $botman->listen();
