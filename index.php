@@ -22,8 +22,6 @@ $config = [
 ];
 DriverManager::loadDriver(TelegramDriver::class);
 $botman = BotManFactory::create($config);
-$appConfig = Config::load($botman->getUser()->getId());
-$appConfig->save();
 
 function calcWidth($text, $font)
 {
@@ -129,6 +127,8 @@ $textToGif = function (BotMan $bot, $text)
 $botman->hears('/start', function (BotMan $bot) {
     $bot->reply('Я умею конвертировать текст в гифку. Emoji пока не поддерживаются, но в ближайшее время я что-нибудь с этим сделаю');
     $bot->reply('Давай, напиши мне что-нибудь');
+    $appConfig = Config::load($bot->getUser()->getId());
+    $appConfig->save();
     die();
 });
 $botman->hears('/set_speed(.*)', function (BotMan $bot, $speed) {
