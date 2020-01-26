@@ -179,11 +179,13 @@ $botman->hears('/light_theme', function (BotMan $bot) {
     $appConfig = Config::load($bot->getUser()->getId());
     $appConfig->setBgColor('#FFFFFF')->setFontColor('#000000')->save();
     $bot->reply('Установлена светлая тема');
+    die();
 });
 $botman->hears('/dark_theme', function (BotMan $bot) {
     $appConfig = Config::load($bot->getUser()->getId());
     $appConfig->setBgColor('#000000')->setFontColor('#FFFFFF')->save();
     $bot->reply('Установлена темная тема');
+    die();
 });
 $botman->hears('(.*)', $textToGif);
 $botman->listen();
