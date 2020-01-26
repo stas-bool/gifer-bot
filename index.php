@@ -120,8 +120,8 @@ $textToGif = function (BotMan $bot, $text)
     $animation->writeImages($gifFile, true);
     $animation->clear();
 
-//    sendGif($bot->getUser()->getId(), $gifFile);
-//    unlink($gifFile);
+    sendGif($bot->getUser()->getId(), $gifFile);
+    unlink($gifFile);
     die();
 };
 $botman->hears('/start', function (BotMan $bot) {
