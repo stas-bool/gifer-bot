@@ -3,13 +3,7 @@
 use BotMan\BotMan\BotMan;
 use BotMan\BotMan\BotManFactory;
 use BotMan\BotMan\Drivers\DriverManager;
-use BotMan\BotMan\Messages\Incoming\Answer;
-use BotMan\BotMan\Messages\Outgoing\Actions\Button;
-use BotMan\BotMan\Messages\Outgoing\Question;
-use BotMan\Drivers\Telegram\Extensions\Keyboard;
-use BotMan\Drivers\Telegram\Extensions\KeyboardButton;
 use BotMan\Drivers\Telegram\TelegramDriver;
-use GuzzleHttp\Client;
 
 ini_set("xdebug.overload_var_dump", "off");
 require_once __DIR__ . '/vendor/autoload.php';
@@ -23,107 +17,6 @@ $config = [
 DriverManager::loadDriver(TelegramDriver::class);
 $botman = BotManFactory::create($config);
 
-function calcWidth($text, $font)
-{
-    $box = imagettfbbox(20, 0, $font, $text);
-    $width = abs($box[4] - $box[0]);
-    return $width;
-}
-function splitText($text, $font)
-{
-    $words = explode(' ', $text);
-    $row = '';
-    $totalText = [];
-
-    // Пока не кончатся слова в тексте
-    while (count($words) !== 0) {
-        // Убираем одно слово из начала текста
-        $word = array_shift($words);
-
-        if (calcWidth("{$row}{$word} ", $font) > 650) {
-            // Если ширина строки + слово > 500
-            // То слово возвращаем обратно
-            array_unshift($words, $word);
-            // и добавляем конец строки в массив
-            $totalText[] = $row.PHP_EOL;
-            $row = '';
-        } else {
-            $row .= $word . " ";
-        }
-    }
-    $totalText[] = $row;
-    return $totalText;
-}
-function toMultiPart(array $arr) {
-    $result = [];
-    array_walk($arr, function($value, $key) use(&$result) {
-        $result[] = ['name' => $key, 'contents' => $value];
-    });
-    return $result;
-}
-function sendGif($chatId, $gifFile)
-{
-    $client = new Client([
-        'base_uri' => 'https://api.telegram.org/bot887931185:AAEu_F46a_nR87kKeBRN_tUIvRohO4XklSw/'
-    ]);
-    $result = $client->request(
-        'POST',
-        'sendAnimation',
-        [
-//            'proxy' => 'socks5://127.0.0.1:8888',
-            'multipart' => toMultiPart([
-                'chat_id' => $chatId,
-                'animation' => fopen($gifFile, 'r')
-            ])
-        ]
-    );
-}
-
-$textToGif = function (BotMan $bot, $text)
-{
-    if (strlen($text) > 300) {
-        $bot->reply("Слииииишком длинный текст. Я могу обработать текст не длинее 300 символов😕");
-        die();
-    }
-    $bot->reply('Обрабатываю');
-    $font = __DIR__.'/NotoSans-Regular.ttf';
-    $animation = new Imagick();
-    $animation->setFormat("gif");
-
-    $formatedTextArray = splitText($text, $font);
-    $formatedText = implode("", $formatedTextArray);
-    $textLength = mb_strlen($formatedText);
-
-    $appConfig = Config::load($bot->getUser()->getId());
-    for ($end = 1; $end <= $textLength; $end++) {
-        $image = new Imagick();
-        $image->setResourceLimit(6, 1);
-
-        $image->newImage(500, 30 * count($formatedTextArray), new ImagickPixel($appConfig->getBgColor()));
-        $draw = new ImagickDraw();
-        $draw->setFillColor(new ImagickPixel($appConfig->getFontColor()));
-        $draw->setFontSize(20);
-        $draw->setFont($font);
-
-        $textToImage = mb_substr($formatedText, 0, $end);
-        $image->annotateImage($draw, 5, 20, 0, $textToImage);
-        $image->setImageFormat('png');
-//        $image->roundCorners(5,5);
-        $animation->addImage($image);
-        $animation->nextImage();
-        $animation->setImageDelay(100 / $appConfig->getSpeed());
-        $image->clear();
-    }
-    $animation->setImageDelay(300);
-
-    $gifFile = "/tmp/{$bot->getUser()->getId()}.gif";
-    $animation->writeImages($gifFile, true);
-    $animation->clear();
-
-    sendGif($bot->getUser()->getId(), $gifFile);
-    unlink($gifFile);
-    die();
-};
 $botman->hears('/start', function (BotMan $bot) {
     $bot->reply('Я умею конвертировать текст в гифку. Emoji пока не поддерживаются, но в ближайшее время я что-нибудь с этим сделаю');
     $bot->reply('Давай, напиши мне что-нибудь');
@@ -189,5 +82,14 @@ $botman->hears('/dark_theme', function (BotMan $bot) {
     $bot->reply('Установлена темная тема');
     die();
 });
-$botman->hears('(.*)', $textToGif);
+$botman->hears('(.*)', function (BotMan $bot, $text) {
+    if (iconv_strlen($text) > 300) {
+        $bot->reply(iconv_strlen($text));
+        $bot->reply("Слииииишком длинный текст. Я могу обработать текст не длинее 300 символов😕");
+        die();
+    }
+    $bot->reply('Обрабатываю...');
+    $userId = $bot->getUser()->getId();
+    DBConnect::connect()->newTask(Config::load($userId), $text);
+});
 $botman->listen();
