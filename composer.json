@@ -6,7 +6,9 @@
     "ext-imagick": "*",
     "ext-gd": "*",
     "guzzlehttp/guzzle": "^6.5",
+    "ext-json": "*",
+    "ext-curl": "*",
     "ext-sqlite3": "*",
-    "ext-json": "*"
+    "ext-iconv": "*"
   }
 }

@@ -17,6 +17,11 @@ class Config
         $this->fontColor = $config['font_color'];
     }
 
+    public function getUserId()
+    {
+        return $this->userId;
+    }
+
     public function getBgColor()
     {
         return $this->bgColor;
@@ -52,7 +57,7 @@ class Config
 
     public static function load($userId)
     {
-        $db = new DBConnect();
+        $db = DBConnect::connect();
         $config = $db->getConfigByUserId($userId);
         if (!$config) {
             $config = [
@@ -75,8 +80,7 @@ class Config
             'bg_color' => $this->bgColor,
             'font_color' => $this->fontColor,
         ];
-        $db = new DBConnect();
-        $db->saveConfig($this->userId, json_encode($config));
+        DBConnect::connect()->saveConfig($this->userId, json_encode($config));
         return $this;
     }
 }
