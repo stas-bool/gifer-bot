@@ -14,7 +14,7 @@ class DBConnect
 
     public static function connect()
     {
-        $db = new SQLite3('gifer.sqlite3');
+        $db = new SQLite3(__DIR__ .'/../gifer.sqlite3');
         $createUsersTableSQL = 'CREATE TABLE IF NOT EXISTS configs_tbl (user_id INTEGER PRIMARY KEY, config TEXT)';
         $createTasksTableSQL = 'CREATE TABLE IF NOT EXISTS tasks (id INTEGER PRIMARY KEY AUTOINCREMENT, user_id INTEGER, bg_color TEXT, font_color TEXT, speed INTEGER, text TEXT, status TEXT)';
         $db->exec($createUsersTableSQL);

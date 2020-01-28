@@ -27,7 +27,7 @@ function splitText($text, $font)
         // Убираем одно слово из начала текста
         $word = array_shift($words);
 
-        if (calcWidth("{$row}{$word} ", $font) > 700) {
+        if (calcWidth("{$row}{$word} ", $font) > 690) {
             // Если ширина строки + слово > 500
             // То слово возвращаем обратно
             array_unshift($words, $word);
@@ -57,7 +57,7 @@ function sendGif($chatId, $gifFile)
         'POST',
         'sendAnimation',
         [
-            'proxy' => 'socks5://127.0.0.1:8888',
+            // 'proxy' => 'socks5://127.0.0.1:8888',
             'multipart' => toMultiPart([
                 'chat_id' => $chatId,
                 'animation' => fopen($gifFile, 'r')
