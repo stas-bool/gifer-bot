@@ -27,8 +27,9 @@ function splitText($text, $font)
         // Убираем одно слово из начала текста
         $word = array_shift($words);
 
-        if (calcWidth("{$row}{$word} ", $font) > 690) {
-            // Если ширина строки + слово > 500
+        $strWidth = calcWidth("{$row}{$word} ", $font);
+        if ($strWidth > 690) {
+            // Если ширина строки + слово > 690
             // То слово возвращаем обратно
             array_unshift($words, $word);
             // и добавляем конец строки в массив
@@ -68,11 +69,13 @@ function sendGif($chatId, $gifFile)
 
 $font = __DIR__.'/../NotoSans-Regular.ttf';
 $gifWidth = 500;
-$gifRowHeight = 27;
+$gifRowHeight = 29;
 $fontSize = 20;
 
 $textCoordX = 5;
 $textCoordY = 20;
+
+$newLines = substr_count($task['text'], "\n");
 
 $animation = new Imagick();
 $animation->setFormat("gif");
@@ -85,7 +88,7 @@ for ($lastSymbol = 1; $lastSymbol <= $textLength; $lastSymbol++) {
     $image = new Imagick();
     $image->setResourceLimit(6, 1);
 
-    $image->newImage($gifWidth, $gifRowHeight * count($formatedTextArray), new ImagickPixel($task['bg_color']));
+    $image->newImage($gifWidth, $gifRowHeight * (count($formatedTextArray) + $newLines), new ImagickPixel($task['bg_color']));
     $draw = new ImagickDraw();
     $draw->setFillColor(new ImagickPixel($task['font_color']));
     $draw->setFontSize($fontSize);
