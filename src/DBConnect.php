@@ -37,13 +37,13 @@ class DBConnect
 
     public function saveConfig($userId, $config)
     {
-        $statement = $this->db->prepare('UPDATE configs_tbl SET config = :config WHERE user_id = :userId LIMIT 1;');
+        $statement = $this->db->prepare('UPDATE configs SET config = :config WHERE user_id=:userId');
         return $statement->execute([':config' => $config, ':userId' => $userId]);
     }
 
     public function newUserConfig($userId, $config)
     {
-        $statement = $this->db->prepare("INSERT INTO configs (user_id, config) VALUES (:userId, :config) ON CONFLICT DO NOTHING");
+        $statement = $this->db->prepare('INSERT INTO configs (user_id, config) VALUES (:userId, :config) ON CONFLICT DO NOTHING');
         return $statement->execute([':config' => $config, ':userId' => $userId]);
     }
 
