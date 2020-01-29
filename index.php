@@ -93,3 +93,4 @@ $botman->hears('(.*)', function (BotMan $bot, $text) {
     DBConnect::connect()->newTask(Config::load($userId), $text);
 });
 $botman->listen();
+

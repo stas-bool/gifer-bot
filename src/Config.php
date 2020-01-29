@@ -65,7 +65,7 @@ class Config
                 'bg_color' => '#FFEBEB',
                 'font_color' => 'black'
             ];
-            $db->createNew($userId, json_encode($config));
+            $db->newUserConfig($userId, json_encode($config));
         }
         if (is_null(self::$instance)) {
             self::$instance = new Config($userId, $config);

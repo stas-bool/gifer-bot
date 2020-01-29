@@ -4,3 +4,4 @@ vendor
 *.un~
 *.gif
 /gifer.sqlite3
+test.php
