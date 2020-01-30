@@ -81,6 +81,8 @@ class DBConnect
     public function setTaskDone($taskId)
     {
         $statement = $this->db->prepare("UPDATE tasks SET status = 'done' WHERE id = :taskId");
-        $statement->execute([':taskId' => $taskId]);
+        $result = $statement->execute([':taskId' => $taskId]);
+        $this->db->query("COMMIT");
+        return $result;
     }
 }
