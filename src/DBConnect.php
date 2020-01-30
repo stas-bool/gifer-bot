@@ -65,6 +65,7 @@ class DBConnect
 
     public function getTask()
     {
+        $this->db->query("BEGIN");
         $sql = "SELECT * FROM tasks WHERE status = 'new' LIMIT 1 FOR UPDATE";
         $result = $this->db->query($sql);
         $task = $result->fetch(PDO::FETCH_ASSOC);
@@ -73,6 +74,7 @@ class DBConnect
             $statement->execute([':taskId' => $task['id']]);
             return $task;
         }
+        $this->db->query("COMMIT");
         return false;
     }
 
