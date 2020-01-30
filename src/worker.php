@@ -28,7 +28,7 @@ function splitText($text, $font)
         $word = array_shift($words);
 
         $strWidth = calcWidth("{$row}{$word} ", $font);
-        if ($strWidth > 690) {
+        if ($strWidth > 675) {
             // Если ширина строки + слово > 690
             // То слово возвращаем обратно
             array_unshift($words, $word);
