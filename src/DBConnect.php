@@ -1,5 +1,9 @@
 <?php
 
+namespace Bot;
+
+use PDO;
+
 class DBConnect
 {
     /**

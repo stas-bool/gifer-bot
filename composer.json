@@ -11,5 +11,10 @@
     "ext-sqlite3": "*",
     "ext-iconv": "*",
     "ext-pdo": "*"
+  },
+  "autoload": {
+    "psr-4": {
+      "Bot\\": "src/"
+    }
   }
 }

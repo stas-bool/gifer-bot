@@ -1,9 +1,9 @@
 <?php
 
 use GuzzleHttp\Client;
+use Bot\DBConnect;
 
 require_once __DIR__ . '/../vendor/autoload.php';
-require_once __DIR__ . '/../src/Config.php';
 
 $appConfig = json_decode(file_get_contents(__DIR__.'/../telegram-config.json'), true);
 $db = DBConnect::connect();

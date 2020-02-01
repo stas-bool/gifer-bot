@@ -1,6 +1,7 @@
 <?php
 
-require_once __DIR__.'/DBConnect.php';
+namespace Bot;
+
 class Config
 {
     private $userId;
