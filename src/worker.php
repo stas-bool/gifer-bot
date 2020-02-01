@@ -5,7 +5,7 @@ use GuzzleHttp\Client;
 require_once __DIR__ . '/../vendor/autoload.php';
 require_once __DIR__ . '/../src/Config.php';
 
-$telegramToken = json_decode(file_get_contents(__DIR__.'/../telegram-config.json'));
+$telegramToken = json_decode(file_get_contents(__DIR__.'/../telegram-config.json'), true)['token'];
 $db = DBConnect::connect();
 $task = $db->getTask();
 if (!$task) {
@@ -59,7 +59,7 @@ function sendGif($chatId, $gifFile, $telegramToken)
         'POST',
         'sendAnimation',
         [
-            'proxy' => 'socks5://127.0.0.1:8888',
+            //'proxy' => 'socks5://127.0.0.1:8888',
             'multipart' => toMultiPart([
                 'chat_id' => $chatId,
                 'animation' => fopen($gifFile, 'r')
