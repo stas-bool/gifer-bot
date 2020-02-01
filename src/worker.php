@@ -5,8 +5,8 @@ use Bot\DBConnect;
 
 require_once __DIR__ . '/../vendor/autoload.php';
 
-$appConfig = json_decode(file_get_contents(__DIR__.'/../telegram-config.json'), true);
-$db = DBConnect::connect();
+$appConfig = json_decode(file_get_contents(__DIR__ . '/../config.json'), true);
+$db = DBConnect::connect($appConfig['database']);
 $task = $db->getTask();
 if (!$task) {
     exit(0);

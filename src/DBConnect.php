@@ -16,9 +16,9 @@ class DBConnect
         $this->db = $db;
     }
 
-    public static function connect()
+    public static function connect($dbconfig)
     {
-        $db = new PDO("pgsql:dbname=gifer;host=localhost", 'gifer', '01091986');
+        $db = new PDO("pgsql:dbname={$dbconfig['dbname']};host={$dbconfig['host']}", $dbconfig['username'], $dbconfig['password']);
         $db->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
         $createConfigsTable = "CREATE TABLE IF NOT EXISTS configs (user_id INTEGER UNIQUE, config TEXT)";
         $db->query($createConfigsTable);
