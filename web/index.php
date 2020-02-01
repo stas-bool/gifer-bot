@@ -8,18 +8,19 @@ use BotMan\Drivers\Telegram\TelegramDriver;
 ini_set("xdebug.overload_var_dump", "off");
 require_once __DIR__ . '/../vendor/autoload.php';
 require_once __DIR__ . '/../src/Config.php';
+$telegramToken = json_decode(file_get_contents(__DIR__.'/../telegram-config.json'));
 $config = [
     // Your driver-specific configuration
      "telegram" => [
-        "token" => "887931185:AAEu_F46a_nR87kKeBRN_tUIvRohO4XklSw"
+        "token" => $telegramToken['token']
      ]
 ];
 DriverManager::loadDriver(TelegramDriver::class);
 $botman = BotManFactory::create($config);
 
 $botman->hears('/start', function (BotMan $bot) {
-    $bot->reply('Я умею конвертировать текст в гифку. Emoji пока не поддерживаются, но в ближайшее время я что-нибудь с этим сделаю');
-    $bot->reply('Давай, напиши мне что-нибудь');
+    $bot->reply('Я умею конвертировать текст в гифку');
+    $bot->reply('Напиши мне что-нибудь');
     $appConfig = Config::load($bot->getUser()->getId());
     $appConfig->save();
     die();

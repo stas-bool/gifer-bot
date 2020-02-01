@@ -5,6 +5,7 @@ use GuzzleHttp\Client;
 require_once __DIR__ . '/../vendor/autoload.php';
 require_once __DIR__ . '/../src/Config.php';
 
+$telegramToken = json_decode(file_get_contents(__DIR__.'/../telegram-config.json'));
 $db = DBConnect::connect();
 $task = $db->getTask();
 if (!$task) {
@@ -49,16 +50,16 @@ function toMultiPart(array $arr) {
     });
     return $result;
 }
-function sendGif($chatId, $gifFile)
+function sendGif($chatId, $gifFile, $telegramToken)
 {
     $client = new Client([
-        'base_uri' => 'https://api.telegram.org/bot887931185:AAEu_F46a_nR87kKeBRN_tUIvRohO4XklSw/'
+        'base_uri' => "https://api.telegram.org/bot{$telegramToken}/"
     ]);
     $client->request(
         'POST',
         'sendAnimation',
         [
-            // 'proxy' => 'socks5://127.0.0.1:8888',
+            'proxy' => 'socks5://127.0.0.1:8888',
             'multipart' => toMultiPart([
                 'chat_id' => $chatId,
                 'animation' => fopen($gifFile, 'r')
@@ -108,6 +109,6 @@ $gifFile = "/tmp/{$task['user_id']}.gif";
 $animation->writeImages($gifFile, true);
 $animation->clear();
 
-sendGif($task['user_id'], $gifFile);
+sendGif($task['user_id'], $gifFile, $telegramToken);
 unlink($gifFile);
 $db->setTaskDone($task['id']);

@@ -5,3 +5,4 @@ vendor
 *.gif
 /gifer.sqlite3
 test.php
+/telegram-config.json
