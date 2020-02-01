@@ -5,7 +5,7 @@ use GuzzleHttp\Client;
 require_once __DIR__ . '/../vendor/autoload.php';
 require_once __DIR__ . '/../src/Config.php';
 
-$telegramToken = json_decode(file_get_contents(__DIR__.'/../telegram-config.json'), true)['token'];
+$appConfig = json_decode(file_get_contents(__DIR__.'/../telegram-config.json'), true);
 $db = DBConnect::connect();
 $task = $db->getTask();
 if (!$task) {
@@ -50,21 +50,26 @@ function toMultiPart(array $arr) {
     });
     return $result;
 }
-function sendGif($chatId, $gifFile, $telegramToken)
+function sendGif($chatId, $gifFile, $appConfig)
 {
+    $telegramToken = $appConfig['token'];
     $client = new Client([
         'base_uri' => "https://api.telegram.org/bot{$telegramToken}/"
     ]);
+    $requestOptions = [
+        //'proxy' => 'socks5://127.0.0.1:8888',
+        'multipart' => toMultiPart([
+            'chat_id' => $chatId,
+            'animation' => fopen($gifFile, 'r')
+        ])
+    ];
+    if (isset($appConfig['proxy'])) {
+        $requestOptions['proxy'] = $appConfig['proxy'];
+    }
     $client->request(
         'POST',
         'sendAnimation',
-        [
-            //'proxy' => 'socks5://127.0.0.1:8888',
-            'multipart' => toMultiPart([
-                'chat_id' => $chatId,
-                'animation' => fopen($gifFile, 'r')
-            ])
-        ]
+        $requestOptions
     );
 }
 
@@ -109,6 +114,6 @@ $gifFile = "/tmp/{$task['user_id']}.gif";
 $animation->writeImages($gifFile, true);
 $animation->clear();
 
-sendGif($task['user_id'], $gifFile, $telegramToken);
+sendGif($task['user_id'], $gifFile, $appConfig);
 unlink($gifFile);
 $db->setTaskDone($task['id']);
