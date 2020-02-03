@@ -50,9 +50,9 @@ function toMultiPart(array $arr) {
     });
     return $result;
 }
-function sendGif($chatId, $gifFile, $appConfig)
+function sendGif($chatId, $gifFile, $telegramConfig)
 {
-    $telegramToken = $appConfig['token'];
+    $telegramToken = $telegramConfig['token'];
     $client = new Client([
         'base_uri' => "https://api.telegram.org/bot{$telegramToken}/"
     ]);
@@ -114,6 +114,6 @@ $gifFile = "/tmp/{$task['user_id']}.gif";
 $animation->writeImages($gifFile, true);
 $animation->clear();
 
-sendGif($task['user_id'], $gifFile, $appConfig);
+sendGif($task['user_id'], $gifFile, $appConfig['telegram']);
 unlink($gifFile);
 $db->setTaskDone($task['id']);
