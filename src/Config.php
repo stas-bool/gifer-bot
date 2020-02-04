@@ -8,16 +8,16 @@ class Config
     private $speed;
     private $bgColor;
     private $fontColor;
-    private $dbConfig;
+    private $db;
     private static $instance;
 
-    private function __construct($userId, array $config, $dbConfig)
+    private function __construct($userId, array $config, DBConnect $db)
     {
         $this->userId = $userId;
         $this->speed = $config['speed'];
         $this->bgColor = $config['bg_color'];
         $this->fontColor = $config['font_color'];
-        $this->dbConfig = $dbConfig;
+        $this->db = $db;
     }
 
     public function getUserId()
@@ -58,20 +58,19 @@ class Config
         return $this;
     }
 
-    public static function load(int $userId, array $dbConfig)
+    public static function load(int $userId, DBConnect $db)
     {
-        $db = DBConnect::connect($dbConfig);
         $config = $db->getConfigByUserId($userId);
-        if (!$config) {
+        if (is_null($config)) {
             $config = [
                 'speed' => 5,
-                'bg_color' => '#FFEBEB',
+                'bg_color' => 'white',
                 'font_color' => 'black'
             ];
-            $db->newUserConfig($userId, json_encode($config));
+            $db->saveConfig($userId, $config);
         }
         if (is_null(self::$instance)) {
-            self::$instance = new Config($userId, $config, $dbConfig);
+            self::$instance = new Config($userId, $config, $db);
         }
         return self::$instance;
     }
@@ -83,7 +82,7 @@ class Config
             'bg_color' => $this->bgColor,
             'font_color' => $this->fontColor,
         ];
-        DBConnect::connect($this->dbConfig)->saveConfig($this->userId, json_encode($config));
+        $this->db->saveConfig($this->userId, $config);
         return $this;
     }
 }

@@ -63,8 +63,8 @@ function sendGif($chatId, $gifFile, $telegramConfig)
             'animation' => fopen($gifFile, 'r')
         ])
     ];
-    if (isset($appConfig['proxy'])) {
-        $requestOptions['proxy'] = $appConfig['proxy'];
+    if (isset($telegramConfig['proxy'])) {
+        $requestOptions['proxy'] = $telegramConfig['proxy'];
     }
     $client->request(
         'POST',
@@ -73,7 +73,7 @@ function sendGif($chatId, $gifFile, $telegramConfig)
     );
 }
 
-$font = __DIR__.'/../NotoSans-Regular.ttf';
+$font = __DIR__ . '/../fonts/NotoSans-Regular.ttf';
 $gifWidth = 500;
 $gifRowHeight = 29;
 $fontSize = 20;

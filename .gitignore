@@ -4,6 +4,6 @@ vendor
 *.un~
 *.gif
 /gifer.sqlite3
-test.php
 /config.json
 /test-config.json
+/tests/.phpunit.result.cache
