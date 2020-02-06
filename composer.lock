@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "83cfbc15aa5710a01c790d3d64c90cf1",
+    "content-hash": "8b819a7e040ab1c43ba836f7e5d0a919",
     "packages": [
         {
             "name": "botman/botman",
@@ -415,6 +415,57 @@
                 "pipeline"
             ],
             "time": "2017-04-21T13:22:05+00:00"
+        },
+        {
+            "name": "nikhaker/botman-vk-driver",
+            "version": "v0.2.2",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/shadowusr/botman-vk-driver.git",
+                "reference": "9ec128bb0478226f44cb60e5d85473ac24704d52"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/shadowusr/botman-vk-driver/zipball/9ec128bb0478226f44cb60e5d85473ac24704d52",
+                "reference": "9ec128bb0478226f44cb60e5d85473ac24704d52",
+                "shasum": ""
+            },
+            "require": {
+                "botman/botman": "~2.0",
+                "php": ">=7.0"
+            },
+            "type": "library",
+            "extra": {
+                "laravel": {
+                    "providers": [
+                        "BotMan\\Drivers\\Vk\\Providers\\VkServiceProvider"
+                    ]
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "BotMan\\Drivers\\Vk\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Nik Haker",
+                    "email": "nikhakerlab@mail.ru"
+                }
+            ],
+            "description": "Vk driver for BotMan",
+            "homepage": "http://github.com/nikhaker/botman-vk-driver",
+            "keywords": [
+                "Botman",
+                "bot",
+                "vk",
+                "vkontakte"
+            ],
+            "time": "2018-08-10T10:12:32+00:00"
         },
         {
             "name": "opis/closure",

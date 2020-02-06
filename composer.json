@@ -10,7 +10,8 @@
     "ext-curl": "*",
     "ext-sqlite3": "*",
     "ext-iconv": "*",
-    "ext-pdo": "*"
+    "ext-pdo": "*",
+    "nikhaker/botman-vk-driver": "^0.2.2"
   },
   "autoload": {
     "psr-4": {
