@@ -8,10 +8,8 @@
     "guzzlehttp/guzzle": "^6.5",
     "ext-json": "*",
     "ext-curl": "*",
-    "ext-sqlite3": "*",
     "ext-iconv": "*",
-    "ext-pdo": "*",
-    "nikhaker/botman-vk-driver": "^0.2.2"
+    "ext-pdo": "*"
   },
   "autoload": {
     "psr-4": {

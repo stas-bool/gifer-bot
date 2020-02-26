@@ -9,7 +9,6 @@ use Bot\DBConnect;
 
 ini_set("xdebug.overload_var_dump", "off");
 require_once __DIR__ . '/../vendor/autoload.php';
-require_once __DIR__ . '/../src/Config.php';
 $appConfig = json_decode(file_get_contents(__DIR__ . '/../config.json'), true);
 $db = DBConnect::connect($appConfig['database']);
 $config = [
