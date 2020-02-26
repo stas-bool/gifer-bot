@@ -7,3 +7,4 @@ vendor
 /config.json
 /test-config.json
 /tests/.phpunit.result.cache
+tmp/
