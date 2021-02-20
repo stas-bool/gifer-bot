@@ -8,3 +8,4 @@ vendor
 /test-config.json
 /tests/.phpunit.result.cache
 tmp/
+/.env

@@ -17,7 +17,7 @@ trait GifSenderTrait
         $requestOptions = [
             'multipart' => self::toMultiPart([
                 'chat_id' => $chatId,
-                'animation' => fopen($gifFile, 'r')
+                'animation' => fopen($gifFile, 'rb')
             ])
         ];
         if (isset($telegramConfig['proxy'])) {

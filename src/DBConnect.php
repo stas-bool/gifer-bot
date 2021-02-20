@@ -16,7 +16,7 @@ class DBConnect
         $this->db = $db;
     }
 
-    public static function connect($dbconfig)
+    public static function connect($dbconfig): DBConnect
     {
         $db = new PDO("pgsql:dbname={$dbconfig['dbname']};host={$dbconfig['host']}", $dbconfig['username'], $dbconfig['password']);
         $db->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
@@ -83,17 +83,17 @@ class DBConnect
 
     public function getTask(): ?array
     {
-        $this->db->query("BEGIN");
+        $this->db->exec("BEGIN");
         $sql = "SELECT * FROM tasks WHERE status = 'new' LIMIT 1 FOR UPDATE";
         $result = $this->db->query($sql);
         $task = $result->fetch(PDO::FETCH_ASSOC);
         if ($task) {
             $statement = $this->db->prepare("UPDATE tasks SET status = 'in_process' WHERE id=:taskId");
             $statement->execute([':taskId' => $task['id']]);
-            $this->db->query("COMMIT");
+            $this->db->exec("COMMIT");
             return $task;
         }
-        $this->db->query("COMMIT");
+        $this->db->exec("COMMIT");
         return null;
     }
 

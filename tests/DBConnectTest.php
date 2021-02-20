@@ -30,12 +30,12 @@ class DBConnectTest extends TestCase
 
     public function testConnect()
     {
-        $this->assertInstanceOf(DBConnect::class, self::$db);
+        self::assertInstanceOf(DBConnect::class, self::$db);
     }
 
     public function testNewUserConfig()
     {
-        $this->assertTrue(
+        self::assertTrue(
             self::$db->saveConfig($this->userId, $this->userConfig),
             'Не удалось создать конфигурацию пользователя'
         );
@@ -44,16 +44,16 @@ class DBConnectTest extends TestCase
     public function testGetConfigByUserId()
     {
         $userConfigFromDb = self::$db->getConfigByUserId($this->userId);
-        $this->assertEquals($this->userConfig, $userConfigFromDb);
+        self::assertEquals($this->userConfig, $userConfigFromDb);
         $notExistUserId = 0;
-        $this->assertNull(self::$db->getConfigByUserId($notExistUserId));
+        self::assertNull(self::$db->getConfigByUserId($notExistUserId));
     }
 
     public function testNewTask()
     {
         $userConfig = Config::load($this->userId, self::$db);
         $newTaskId = self::$db->newTask($userConfig, 'test text');
-        $this->assertIsString($newTaskId);
+        self::assertIsString($newTaskId);
         return $newTaskId;
     }
 
@@ -65,8 +65,8 @@ class DBConnectTest extends TestCase
     public function testGetTask($newTaskId)
     {
         $task = self::$db->getTask();
-        $this->assertIsArray($task);
-        $this->assertEquals((int) $newTaskId, $task['id']);
+        self::assertIsArray($task);
+        self::assertEquals((int) $newTaskId, $task['id']);
         return $task['id'];
     }
 
@@ -77,6 +77,6 @@ class DBConnectTest extends TestCase
     public function testSetTaskDone($taskId)
     {
         self::$db->setTaskDone($taskId);
-        $this->assertNull(self::$db->getTask());
+        self::assertNull(self::$db->getTask());
     }
 }
