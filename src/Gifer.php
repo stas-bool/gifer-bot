@@ -11,11 +11,11 @@ use ImagickPixel;
 class Gifer
 {
     use GifSenderTrait;
-    const GIF_WIDTH = 500;
-    const GIF_ROW_HEIGHT = 29;
-    const FONT_SIZE = 20;
-    const TEXT_COORD_X = 5;
-    const TEXT_COORD_Y = 20;
+    public const GIF_WIDTH = 500;
+    public const GIF_ROW_HEIGHT = 29;
+    public const FONT_SIZE = 20;
+    public const TEXT_COORD_X = 5;
+    public const TEXT_COORD_Y = 20;
 
     private $fontFile;
     private $text;
@@ -27,6 +27,9 @@ class Gifer
     public function __construct(string $fontFile, array $taskParams)
     {
         $this->fontFile = $fontFile;
+        if (iconv_strlen($taskParams['text']) > 300) {
+            throw new \RuntimeException("Слишком длинный текст");
+        }
         $this->text = $taskParams['text'];
         $this->bgColor = $taskParams['bg_color'];
         $this->fontColor = $taskParams['font_color'];
@@ -43,7 +46,7 @@ class Gifer
         return $fontMetrics['textWidth'];
     }
 
-    public function process()
+    public function process(): string
     {
         $newLines = substr_count($this->text, "\n");
 
@@ -61,7 +64,7 @@ class Gifer
             $draw->setFontSize(self::FONT_SIZE);
             $draw->setFont($this->fontFile);
             $textToImage = mb_substr($formatedText, 0, $lastSymbol);
-            $image->setResourceLimit(6, 1);
+            $image::setResourceLimit(6, 1);
 
             $image->newImage(self::GIF_WIDTH, self::GIF_ROW_HEIGHT * (count($formatedTextArray) + $newLines), new ImagickPixel($this->bgColor));
 

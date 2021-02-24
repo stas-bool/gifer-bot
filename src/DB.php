@@ -1,0 +1,140 @@
+<?php
+
+namespace Bot;
+
+use PDO;
+use RuntimeException;
+
+class DB
+{
+    /**
+     * @var PDO
+     */
+    private $db;
+
+    private function __construct(PDO $db)
+    {
+        $this->db = $db;
+    }
+
+    public static function connect($dsn, $user, $password): DB
+    {
+        $db = new PDO($dsn, $user, $password);
+        $db->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+        $result = self::createTables($db);
+        if ($result) {
+            return new self($db);
+        }
+        throw new RuntimeException("Не удалось подключиться к базе");
+    }
+
+    private static function createTables($db): bool
+    {
+        $createConfigsTable = "CREATE TABLE IF NOT EXISTS user_config (user_id INTEGER UNIQUE, speed INTEGER, bg_color VARCHAR (10), font_color VARCHAR (10) )";
+        $createTasksTable = "CREATE TABLE IF NOT EXISTS task (id SERIAL, config INTEGER REFERENCES user_config (user_id), text TEXT, status VARCHAR (10))";
+        $createConfigsTableResult = $db->query($createConfigsTable);
+        $createTasksTableResult = $db->query($createTasksTable);
+        return $createConfigsTableResult && $createTasksTableResult;
+    }
+
+    /**
+     * @param $userId
+     * @return mixed
+     */
+    public function getConfigByUserId($userId)
+    {
+        $statement = $this->db->prepare("SELECT * FROM user_config WHERE user_id=:userId LIMIT 1");
+        $statement->execute([':userId' => $userId]);
+        return $statement->fetch(PDO::FETCH_ASSOC);
+    }
+
+    public function saveConfig(Config $config): bool
+    {
+        if ($config->hasErrors()) {
+            return false;
+        }
+        $statement = $this->db->prepare(
+            'INSERT INTO user_config (user_id, speed, bg_color, font_color) '.
+                'VALUES (:userId, :speed, :bg_color, :font_color) '.
+                'ON CONFLICT (user_id) '.
+                'DO UPDATE SET speed=:speed, bg_color=:bg_color, font_color=:font_color'
+        );
+        $result = $statement->execute([
+            ':userId' => $config->getUserId(),
+            ':speed' => $config->getSpeed(),
+            ':bg_color' => $config->getBgColor(),
+            ':font_color' => $config->getFontColor(),
+        ]);
+        $statement->closeCursor();
+        return $result;
+    }
+
+    /**
+     * @param int $userId
+     * @param string $text
+     * @return int
+     */
+    public function newTask(int $userId, string $text): int
+    {
+        if (iconv_strlen($text) > 300) {
+            throw new RuntimeException("Слишком длинный текст");
+        }
+        $sql = 'INSERT INTO task (config, text, status)
+            VALUES (:config, :text, :status)';
+        $statement = $this->db->prepare($sql);
+        $values = [
+            ':config' => $userId,
+            ':text' => $text,
+            ':status' => 'new',
+        ];
+        $statement->execute($values);
+        $statement->closeCursor();
+        return (int)$this->db->lastInsertId();
+    }
+
+    public function getNewTask(): ?array
+    {
+        $this->db->exec("BEGIN");
+        $sql = "SELECT * FROM task t JOIN user_config c on t.config = c.user_id WHERE status = 'new' LIMIT 1 FOR UPDATE";
+        $result = $this->db->query($sql);
+        $task = $result->fetch(PDO::FETCH_ASSOC);
+        if ($task) {
+            $statement = $this->db->prepare("UPDATE task SET status = 'in_process' WHERE id=:taskId");
+            $statement->execute([':taskId' => $task['id']]);
+            $this->db->exec("COMMIT");
+            return $task;
+        }
+        $this->db->exec("COMMIT");
+        return null;
+    }
+
+    public function setTaskDone($taskId): bool
+    {
+        $statement = $this->db->prepare("UPDATE task SET status = 'done' WHERE id=:taskId");
+        $result = $statement->execute([':taskId' => $taskId]);
+        $this->db->exec("COMMIT");
+        $statement->closeCursor();
+        return $result;
+    }
+
+    public function deleteConfig($userId): bool
+    {
+        $statement = $this->db->prepare("DELETE FROM user_config WHERE user_id=:userId");
+        $result = $statement->execute([':userId' => $userId]);
+        $this->db->exec("COMMIT");
+        return $result;
+    }
+
+    public function deleteTask($taskId): bool
+    {
+        $statement = $this->db->prepare("DELETE FROM task WHERE id=:taskId");
+        $result = $statement->execute([':taskId' => $taskId]);
+        $this->db->exec("COMMIT");
+        return $result;
+    }
+
+    public function query(string $sql)
+    {
+        return $this->db->query($sql);
+    }
+}

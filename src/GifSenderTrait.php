@@ -8,9 +8,8 @@ use GuzzleHttp\Client;
 
 trait GifSenderTrait
 {
-    public static function sendGif($chatId, $gifFile, $telegramConfig)
+    public static function sendGif($chatId, $gifFile, $telegramToken, $telegramProxy = null): void
     {
-        $telegramToken = $telegramConfig['token'];
         $client = new Client([
             'base_uri' => "https://api.telegram.org/bot{$telegramToken}/"
         ]);
@@ -20,8 +19,8 @@ trait GifSenderTrait
                 'animation' => fopen($gifFile, 'rb')
             ])
         ];
-        if (isset($telegramConfig['proxy'])) {
-            $requestOptions['proxy'] = $telegramConfig['proxy'];
+        if (!is_null($telegramProxy)) {
+            $requestOptions['proxy'] = $telegramProxy;
         }
         $client->request(
             'POST',

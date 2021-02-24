@@ -5,82 +5,91 @@ use BotMan\BotMan\BotManFactory;
 use BotMan\BotMan\Drivers\DriverManager;
 use BotMan\Drivers\Telegram\TelegramDriver;
 use Bot\Config;
-use Bot\DBConnect;
+use Bot\DB;
 
 ini_set("xdebug.overload_var_dump", "off");
 require_once __DIR__ . '/../vendor/autoload.php';
-$appConfig = json_decode(file_get_contents(__DIR__ . '/../config.json'), true);
-$db = DBConnect::connect($appConfig['database']);
-$config = [
+
+$dotenv = Dotenv\Dotenv::createImmutable(__DIR__.'/../');
+$dotenv->load();
+
+$db = DB::connect($_ENV['DSN'], $_ENV['DB_USER'], $_ENV['DB_PASSWORD']);
+$botmanConfig = [
     // Your driver-specific configuration
-     "telegram" => $appConfig['telegram']
+     "telegram" => ['token' => $_ENV['TELEGRAM_TOKEN']]
 ];
 DriverManager::loadDriver(TelegramDriver::class);
-$botman = BotManFactory::create($config);
+$botman = BotManFactory::create($botmanConfig);
 
 $botman->hears('/start', function (BotMan $bot) use (&$db) {
-    $bot->reply('Я умею конвертировать текст в гифку');
-    $bot->reply('Напиши мне что-нибудь');
-    $appConfig = Config::load($bot->getUser()->getId(), $db);
-    $appConfig->save();
+    $bot->reply('Я умею конвертировать текст в gif. Text to gif converter');
+    $bot->reply('Напиши мне что-нибудь. Text me something.');
+    $userId = $bot->getUser()->getId();
+    $appConfig = Config::get($userId, $db->getConfigByUserId($userId));
+    $db->saveConfig($appConfig);
     die();
 });
 $botman->hears('/set_speed(.*)', function (BotMan $bot, $speed) use (&$db) {
     $speed = trim($speed);
-    $appConfig = Config::load($bot->getUser()->getId(), $db);
-    if (preg_match('/\d/', $speed) === 1 AND $speed >= 1 AND $speed <= 10) {
-        $appConfig->setSpeed($speed)->save();
-        $bot->reply('Записал');
-    } elseif (is_int(strpos($speed, 'default'))) {
-        $appConfig->setSpeed(5)->save();
-        $bot->reply('Установил дефолтную скорость - 5');
+    $userId = $bot->getUser()->getId();
+    $appConfig = Config::get($userId, $db->getConfigByUserId($userId));
+    $appConfig->setSpeed($speed);
+    $saveResult = $db->saveConfig($appConfig);
+    if (!$saveResult || $appConfig->hasErrors()) {
+        $bot->reply(implode("\n", $appConfig->getErrors()));
     } else {
-        $bot->reply('Чтобы изменить скорость отправь команду /set_speed [1-10]
-Например /set_speed 5');
+        $bot->reply('Записал');
     }
     die();
 });
 $botman->hears('/set_font_color(.*)', function (BotMan $bot, $fontColor) use (&$db) {
     $fontColor = trim($fontColor);
-    $appConfig = Config::load($bot->getUser()->getId(), $db);
-    if (preg_match('/^\#[0-9A-F]{6}$/', $fontColor)) {
-        $appConfig->setFontColor($fontColor)->save();
-        $bot->reply("\"Цвет шрифта {$fontColor}\" - записал");
-    } elseif (is_int(strpos($fontColor, 'default'))) {
-        $appConfig->setFontColor('#000000')->save();
-        $bot->reply('"Цвет шрифта #000000" - записал');
+    $userId = $bot->getUser()->getId();
+    $appConfig = Config::get($userId, $db->getConfigByUserId($userId));
+    $appConfig->setFontColor($fontColor);
+    $saveResult = $db->saveConfig($appConfig);
+    if (!$saveResult || $appConfig->hasErrors()) {
+        $bot->reply(implode("\n", $appConfig->getErrors()));
     } else {
-        $bot->reply('Чтобы установить цвет шрифта отправь команду /set_font_color [цвет]
-Цвет должен быть в таком формате #000000');
+        $bot->reply('Записал');
     }
     die();
 });
 $botman->hears('/set_bg_color(.*)', function (BotMan $bot, $bgColor) use (&$db) {
     $bgColor = trim($bgColor);
-    $appConfig = Config::load($bot->getUser()->getId(), $db);
-    if (preg_match('/^\#[0-9A-F]{6}$/', $bgColor)) {
-        $appConfig->setBgColor($bgColor)->save();
-        $bot->reply("\"Цвет фона {$bgColor}\" - записал");
-        $bot->reply('Записал');
-    } elseif (is_int(strpos($bgColor, 'default'))) {
-        $appConfig->setBgColor('#FFFFFF')->save();
-        $bot->reply('"Цвет фона #FFFFFF" - записал');
+    $userId = $bot->getUser()->getId();
+    $appConfig = Config::get($userId, $db->getConfigByUserId($userId));
+    $appConfig->setBgColor($bgColor);
+    $saveResult = $db->saveConfig($appConfig);
+    if (!$saveResult || $appConfig->hasErrors()) {
+        $bot->reply(implode("\n", $appConfig->getErrors()));
     } else {
-        $bot->reply('Чтобы установить цвет шрифта отправь команду /set_bg_color [цвет]
-Цвет должен быть в таком формате #FFFFFF');
+        $bot->reply('Записал');
     }
     die();
 });
 $botman->hears('/light_theme', function (BotMan $bot) use (&$db) {
-    $appConfig = Config::load($bot->getUser()->getId(), $db);
-    $appConfig->setBgColor('#FFFFFF')->setFontColor('#000000')->save();
-    $bot->reply('Установлена светлая тема');
+    $userId = $bot->getUser()->getId();
+    $appConfig = Config::get($userId, $db->getConfigByUserId($userId));
+    $appConfig->setBgColor('#FFFFFF')->setFontColor('#000000');
+    $saveResult = $db->saveConfig($appConfig);
+    if (!$saveResult || $appConfig->hasErrors()) {
+        $bot->reply(implode("\n", $appConfig->getErrors()));
+    } else {
+        $bot->reply('Установлена светлая тема');
+    }
     die();
 });
 $botman->hears('/dark_theme', function (BotMan $bot) use (&$db) {
-    $appConfig = Config::load($bot->getUser()->getId(), $db);
-    $appConfig->setBgColor('#000000')->setFontColor('#FFFFFF')->save();
-    $bot->reply('Установлена темная тема');
+    $userId = $bot->getUser()->getId();
+    $appConfig = Config::get($userId, $db->getConfigByUserId($userId));
+    $appConfig->setBgColor('#000000')->setFontColor('#FFFFFF');
+    $saveResult = $db->saveConfig($appConfig);
+    if (!$saveResult || $appConfig->hasErrors()) {
+        $bot->reply(implode("\n", $appConfig->getErrors()));
+    } else {
+        $bot->reply('Установлена темная тема');
+    }
     die();
 });
 $botman->hears('(.*)', function (BotMan $bot, $text) use (&$db) {
@@ -91,7 +100,7 @@ $botman->hears('(.*)', function (BotMan $bot, $text) use (&$db) {
     }
     $bot->reply('Обрабатываю...');
     $userId = $bot->getUser()->getId();
-    $db->newTask(Config::load($userId, $db), $text);
+    $db->newTask($userId, $text);
 });
 $botman->listen();
 

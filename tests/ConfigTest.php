@@ -5,46 +5,52 @@ namespace Test;
 
 
 use Bot\Config;
-use Bot\DBConnect;
+use Bot\DB;
+use Dotenv\Dotenv;
 use PHPUnit\Framework\TestCase;
 
 class ConfigTest extends TestCase
 {
-    private $userId = 132763295;
+    private static $userId = 132763295;
     protected static $db;
 
     public static function setUpBeforeClass(): void
     {
-        $testConfig = json_decode(file_get_contents(__DIR__ . '/../test-config.json'), true);
-        self::$db = DBConnect::connect($testConfig['database']);
-        self::$db->query('DROP TABLE IF EXISTS tasks');
-        self::$db->query('DROP TABLE IF EXISTS configs');
-        self::$db->createTables();
+        $dotenv = Dotenv::createImmutable(__DIR__.'/../', '.env.test');
+        $dotenv->load();
+        self::$db = DB::connect($_ENV['DSN'], $_ENV['DB_USER'], $_ENV['DB_PASSWORD']);
     }
 
-    public function testLoad()
+    public function testGetConfig(): Config
     {
-        $userConfig = Config::load($this->userId, self::$db);
-        $this->assertInstanceOf(Config::class, $userConfig);
+        $userConfig = Config::get(self::$userId, self::$db->getConfigByUserId(self::$userId));
+        self::assertNotFalse($userConfig);
         return $userConfig;
     }
 
     /**
-     * @depends testLoad
+     * @depends testGetConfig
      * @param Config $userConfig
      */
-    public function testSetAndGet($userConfig)
+    public function testSave(Config $userConfig): void
     {
         $userConfig->setFontColor("#C39F40");
-        $this->assertEquals("#C39F40", $userConfig->getFontColor());
-
         $userConfig->setBgColor("#FFD23D");
-        $this->assertEquals("#FFD23D", $userConfig->getBgColor());
-
         $userConfig->setSpeed(10);
-        $this->assertEquals(10, $userConfig->getSpeed());
+        self::assertTrue(self::$db->saveConfig($userConfig));
+    }
 
-        $this->assertEquals(132763295, $userConfig->getUserId());
-        $userConfig->save();
+    /**
+     * @depends testGetConfig
+     * @param Config $userConfig
+     */
+    public function testSaveWrongData(Config $userConfig): void
+    {
+        $userConfig->setBgColor('WRONG_FORMAT');
+        $userConfig->setFontColor('WRONG_FORMAT');
+        $userConfig->setSpeed('WRONG_FORMAT');
+
+        self::assertTrue($userConfig->hasErrors());
+        self::assertCount(3, $userConfig->getErrors());
     }
 }
