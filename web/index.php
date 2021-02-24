@@ -100,6 +100,7 @@ $botman->hears('(.*)', function (BotMan $bot, $text) use (&$db) {
     }
     $bot->reply('Обрабатываю...');
     $userId = $bot->getUser()->getId();
+    $config = Config::get($userId);
     $db->newTask($userId, $text);
 });
 $botman->listen();
