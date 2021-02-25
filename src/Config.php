@@ -71,7 +71,7 @@ class Config
 
     public function setSpeed($speed): Config
     {
-        if (is_int($speed) && $speed > 1 && $speed <= 10) {
+        if (is_int($speed) && $speed >= 1 && $speed <= 10) {
             $this->speed = $speed;
         } elseif ($speed === 'default') {
             $this->speed = 5;
