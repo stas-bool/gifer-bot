@@ -5,10 +5,11 @@ namespace Bot;
 
 
 use GuzzleHttp\Client;
+use GuzzleHttp\Exception\GuzzleException;
 
-trait GifSenderTrait
+class TelegramClient
 {
-    public static function sendGif($chatId, $gifFile, $telegramToken, $telegramProxy = null): void
+    public static function sendGif($chatId, $gifFile, $telegramToken, $telegramProxy = null): bool
     {
         $client = new Client([
             'base_uri' => "https://api.telegram.org/bot{$telegramToken}/"
@@ -22,13 +23,19 @@ trait GifSenderTrait
         if (!is_null($telegramProxy)) {
             $requestOptions['proxy'] = $telegramProxy;
         }
-        $client->request(
-            'POST',
-            'sendAnimation',
-            $requestOptions
-        );
+        try {
+            $result = $client->request(
+                'POST',
+                'sendAnimation',
+                $requestOptions
+            );
+        } catch (GuzzleException $e) {
+            return false;
+        }
+        return $result->getStatusCode() === 200;
     }
-    private static function toMultiPart(array $arr) {
+    private static function toMultiPart(array $arr): array
+    {
         $result = [];
         array_walk($arr, function($value, $key) use(&$result) {
             $result[] = ['name' => $key, 'contents' => $value];

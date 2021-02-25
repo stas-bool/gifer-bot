@@ -2,6 +2,7 @@
 
 use Bot\Gifer;
 use Bot\DB;
+use Bot\TelegramClient;
 
 require_once __DIR__ . '/../vendor/autoload.php';
 
@@ -17,8 +18,21 @@ while (true) {
 
 
     $font = __DIR__ . '/../fonts/NotoSans-Regular.ttf';
-    $gifFilePath = (new Gifer($font, $task))->process();
-    Gifer::sendGif($task['user_id'], $gifFilePath, $_ENV['TELEGRAM_TOKEN'], $_ENV['TELEGRAM_PROXY'] ?? null);
-    unlink($gifFilePath);
-    $db->setTaskDone($task['id']);
+    $gifFilePath = Gifer::create($font, $task['text'], $task['bg_color'], $task['font_color'],
+        $task['speed'], $task['user_id'])
+        ->process();
+
+    $success = TelegramClient::sendGif(
+        $task['user_id'],
+        $gifFilePath,
+        $_ENV['TELEGRAM_TOKEN'],
+        $_ENV['TELEGRAM_PROXY'] ?? null
+    );
+
+    if ($success) {
+        unlink($gifFilePath);
+        $db->setTaskDone($task['id']);
+    } else {
+        sleep(10);
+    }
 }

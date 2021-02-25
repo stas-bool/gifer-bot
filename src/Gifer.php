@@ -10,7 +10,6 @@ use ImagickPixel;
 
 class Gifer
 {
-    use GifSenderTrait;
     public const GIF_WIDTH = 500;
     public const GIF_ROW_HEIGHT = 29;
     public const FONT_SIZE = 20;
@@ -22,19 +21,38 @@ class Gifer
     private $bgColor;
     private $fontColor;
     private $speed;
-    private $userId;
+    private $fileName;
 
-    public function __construct(string $fontFile, array $taskParams)
+    public function __construct(
+        string $fontFile,
+        string $text,
+        string $bgColor,
+        string $fontColor,
+        int $speed,
+        string $fileName
+    )
     {
         $this->fontFile = $fontFile;
-        if (iconv_strlen($taskParams['text']) > 300) {
+        if (iconv_strlen($text) > 300) {
             throw new \RuntimeException("Слишком длинный текст");
         }
-        $this->text = $taskParams['text'];
-        $this->bgColor = $taskParams['bg_color'];
-        $this->fontColor = $taskParams['font_color'];
-        $this->speed = $taskParams['speed'];
-        $this->userId = $taskParams['user_id'];
+        $this->text = $text;
+        $this->bgColor = $bgColor;
+        $this->fontColor = $fontColor;
+        $this->speed = $speed;
+        $this->fileName = $fileName;
+    }
+
+    public static function create(
+        string $fontFile,
+        string $text,
+        string $bgColor,
+        string $fontColor,
+        int $speed,
+        string $fileName
+    )
+    {
+        return new self($fontFile, $text, $bgColor, $fontColor, $speed, $fileName);
     }
     public function calcWidth($text)
     {
@@ -53,7 +71,7 @@ class Gifer
         $animation = new Imagick();
         $animation->setFormat("gif");
 
-        $formatedTextArray = $this->splitText($this->text, $this->fontFile);
+        $formatedTextArray = $this->splitText($this->text);
         $formatedText = implode("", $formatedTextArray);
         $textLength = mb_strlen($formatedText);
 
@@ -77,13 +95,13 @@ class Gifer
         }
         $animation->setImageDelay(300);
 
-        $gifFile = "/tmp/{$this->userId}.gif";
+        $gifFile = "/tmp/{$this->fileName}.gif";
         $animation->writeImages($gifFile, true);
         $animation->clear();
         return $gifFile;
     }
 
-    private function splitText(string $text, string $font): array
+    private function splitText(string $text): array
     {
         $words = explode(' ', $text);
         $row = '';
