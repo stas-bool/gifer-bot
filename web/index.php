@@ -30,7 +30,7 @@ $botman->hears('/start', function (BotMan $bot) use (&$db) {
     die();
 });
 $botman->hears('/set_speed(.*)', function (BotMan $bot, $speed) use (&$db) {
-    $speed = (int)trim($speed);
+    $speed = trim($speed);
     $userId = $bot->getUser()->getId();
     $appConfig = Config::get($userId, $db->getConfigByUserId($userId));
     $appConfig->setSpeed($speed);
