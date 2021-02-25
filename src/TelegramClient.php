@@ -17,7 +17,7 @@ class TelegramClient
         $requestOptions = [
             'multipart' => self::toMultiPart([
                 'chat_id' => $chatId,
-                'animation' => fopen($gifFile, 'rb')
+                'animation' => $gifFile
             ])
         ];
         if (!is_null($telegramProxy)) {

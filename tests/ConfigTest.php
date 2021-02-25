@@ -6,7 +6,6 @@ namespace Test;
 
 use Bot\Config;
 use Bot\DB;
-use Dotenv\Dotenv;
 use PHPUnit\Framework\TestCase;
 
 class ConfigTest extends TestCase

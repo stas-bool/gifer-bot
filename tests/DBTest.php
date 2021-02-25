@@ -6,7 +6,6 @@ namespace Test;
 
 use Bot\Config;
 use Bot\DB;
-use Dotenv\Dotenv;
 use PHPUnit\Framework\TestCase;
 
 class DBTest extends TestCase
@@ -59,7 +58,7 @@ class DBTest extends TestCase
         self::assertNull(self::$db->getNewTask());
     }
 
-    public function testSaveWrongData()
+    public function testSaveWrongData(): void
     {
         $config = Config::get(self::$userId, self::$db->getConfigByUserId(self::$userId));
         $config->setBgColor('WRONG_FORMAT');
@@ -68,7 +67,7 @@ class DBTest extends TestCase
         self::assertFalse(self::$db->saveConfig($config));
     }
 
-    public function testTooLongText()
+    public function testTooLongText(): void
     {
         $text = $this->generateRandomString();
         $configFromDb = self::$db->getConfigByUserId(self::$userId);
@@ -78,7 +77,7 @@ class DBTest extends TestCase
         self::$db->newTask($userConfig->getUserId(), $text);
     }
 
-    private function generateRandomString($length = 301)
+    private function generateRandomString($length = 301): string
     {
         $characters = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
         $charactersLength = strlen($characters);
