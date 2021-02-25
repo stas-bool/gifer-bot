@@ -43,7 +43,7 @@ class Config
             $this->bgColor = $bgColor;
         } else {
             $this->errors[] = 'Неверный формат цвета. Должен быть в hex формате.
-            Пример: /set_font_color #000000';
+Пример: /set_bg_color #000000';
         }
         return $this;
     }
@@ -59,7 +59,7 @@ class Config
             $this->fontColor = $fontColor;
         } else {
             $this->errors[] = 'Неверный формат цвета. Должен быть в hex формате.
-            Пример: /set_font_color #FFFFFF';
+Пример: /set_font_color #FFFFFF';
         }
         return $this;
     }
@@ -77,7 +77,7 @@ class Config
             $this->speed = 5;
         } else {
             $this->errors[] = 'Неверный формат скорости. Скорость может быть от 1 до 10 или "default".
-            Пример: /set-speed 5';
+Пример: /set_speed 5';
         }
         return $this;
     }
