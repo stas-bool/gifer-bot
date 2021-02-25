@@ -92,6 +92,10 @@ $botman->hears('/dark_theme', function (BotMan $bot) use (&$db) {
     }
     die();
 });
+$botman->hears('/(.*)', function (BotMan $bot) use (&$db) {
+    $bot->reply('Команда не найдена');
+    die();
+});
 $botman->hears('(.*)', function (BotMan $bot, $text) use (&$db) {
     if (iconv_strlen($text) > 300) {
         $bot->reply(iconv_strlen($text));
