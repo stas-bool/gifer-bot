@@ -30,14 +30,14 @@ $botman->hears('/start', function (BotMan $bot) use (&$db) {
     die();
 });
 $botman->hears('/set_speed(.*)', function (BotMan $bot, $speed) use (&$db) {
-    $speed = trim($speed);
+    $speed = (int)trim($speed);
     $userId = $bot->getUser()->getId();
     $appConfig = Config::get($userId, $db->getConfigByUserId($userId));
     $appConfig->setSpeed($speed);
-    $saveResult = $db->saveConfig($appConfig);
-    if (!$saveResult || $appConfig->hasErrors()) {
+    if ($appConfig->hasErrors()) {
         $bot->reply(implode("\n", $appConfig->getErrors()));
     } else {
+        $db->saveConfig($appConfig);
         $bot->reply('Записал');
     }
     die();
