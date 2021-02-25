@@ -16,8 +16,6 @@ class GiferTest extends TestCase
     private static $userId = 132763295;
     public static function setUpBeforeClass(): void
     {
-        $dotenv = Dotenv::createImmutable(__DIR__.'/../', '.env.test');
-        $dotenv->load();
         self::$db = DB::connect($_ENV['DSN'], $_ENV['DB_USER'], $_ENV['DB_PASSWORD']);
     }
 

@@ -16,8 +16,6 @@ class ConfigTest extends TestCase
 
     public static function setUpBeforeClass(): void
     {
-        $dotenv = Dotenv::createImmutable(__DIR__.'/../', '.env.test');
-        $dotenv->load();
         self::$db = DB::connect($_ENV['DSN'], $_ENV['DB_USER'], $_ENV['DB_PASSWORD']);
     }
 

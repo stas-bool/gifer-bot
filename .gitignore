@@ -2,11 +2,8 @@
 vendor
 *.swp
 *.un~
-*.gif
-/gifer.sqlite3
-/config.json
-/test-config.json
+/config/.env
+/config/.env.test
 /tests/.phpunit.result.cache
-tmp/
-/.env
-/.env.test
+/tests/_output/*
+/.phpunit.result.cache
