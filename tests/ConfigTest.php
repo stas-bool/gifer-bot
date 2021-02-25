@@ -38,6 +38,11 @@ class ConfigTest extends TestCase
         $userConfig->setBgColor("#FFD23D");
         $userConfig->setSpeed(10);
         self::assertTrue(self::$db->saveConfig($userConfig));
+        Config::deleteInstance();
+        $userConfig = Config::get(self::$userId, self::$db->getConfigByUserId(self::$userId));
+        self::assertEquals(10, $userConfig->getSpeed());
+        self::assertEquals("#C39F40", $userConfig->getFontColor());
+        self::assertEquals("#FFD23D", $userConfig->getBgColor());
     }
 
     /**
@@ -48,7 +53,7 @@ class ConfigTest extends TestCase
     {
         $userConfig->setBgColor('WRONG_FORMAT');
         $userConfig->setFontColor('WRONG_FORMAT');
-        $userConfig->setSpeed('WRONG_FORMAT');
+        $userConfig->setSpeed(0);
 
         self::assertTrue($userConfig->hasErrors());
         self::assertCount(3, $userConfig->getErrors());

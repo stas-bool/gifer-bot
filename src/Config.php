@@ -109,6 +109,12 @@ class Config
 
     private function colorInHexFormat($hexColor): bool
     {
-        return preg_match('/^\#[0-9A-F]{6}$/', $hexColor) === 1;
+        return preg_match('/^#[0-9A-F]{6}$/', $hexColor) === 1;
+    }
+
+    public static function deleteInstance(): bool
+    {
+        self::$instance = null;
+        return true;
     }
 }
