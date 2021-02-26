@@ -11,7 +11,7 @@
     "ext-iconv": "*",
     "ext-pdo": "*",
     "vlucas/phpdotenv": "^5.3",
-    "stat-bool/gifer": "dev-master"
+    "stat-bool/gifer": "0.1"
   },
   "autoload": {
     "psr-4": {

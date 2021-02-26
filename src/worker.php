@@ -18,9 +18,7 @@ while (true) {
 
 
     $font = __DIR__ . '/../fonts/NotoSans-Regular.ttf';
-    $gifFile = Gifer::get($font, $task['text'], $task['bg_color'], $task['font_color'],
-        $task['speed'])
-        ->create();
+    $gifFile = Gifer::createGif($font, $task['text'], $task['bg_color'], $task['font_color'], $task['speed']);
 
     $success = TelegramClient::sendGif(
         $task['user_id'],
