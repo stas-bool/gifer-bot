@@ -17,7 +17,7 @@ class TelegramClient
         $requestOptions = [
             'multipart' => self::toMultiPart([
                 'chat_id' => $chatId,
-                'animation' => $gifFile
+                'animation' => fopen($gifFile, 'rb')
             ])
         ];
         if (!is_null($telegramProxy)) {
@@ -37,7 +37,7 @@ class TelegramClient
     private static function toMultiPart(array $arr): array
     {
         $result = [];
-        array_walk($arr, function($value, $key) use(&$result) {
+        array_walk($arr, static function($value, $key) use(&$result) {
             $result[] = ['name' => $key, 'contents' => $value];
         });
         return $result;

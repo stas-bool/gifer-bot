@@ -18,7 +18,14 @@ while (true) {
 
 
     $font = __DIR__ . '/../fonts/NotoSans-Regular.ttf';
-    $gifFile = Gifer::createGif($font, $task['text'], $task['bg_color'], $task['font_color'], $task['speed']);
+
+    $gifFile = sys_get_temp_dir()."/{$task['user_id']}.gif";
+    if (!file_exists($gifFile)) {
+        // TODO Если файл существует, то не надо генерировать gif
+    }
+    $gif = Gifer::createGif($font, $task['text'], $task['bg_color'], $task['font_color'], $task['speed']);
+
+    file_put_contents($gifFile, $gif);
 
     $success = TelegramClient::sendGif(
         $task['user_id'],
@@ -27,9 +34,11 @@ while (true) {
         $_ENV['TELEGRAM_PROXY'] ?? null
     );
 
+    unlink($gifFile);
     if ($success) {
         $db->setTaskDone($task['id']);
     } else {
+        // TODO Если не удалось выполнить, вернуть статус new
         sleep(10);
     }
 }
