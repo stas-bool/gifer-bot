@@ -30,16 +30,26 @@ class DB
 
     private static function createTables($db): bool
     {
-        $createConfigsTable = "CREATE TABLE IF NOT EXISTS user_config (user_id INTEGER UNIQUE, speed INTEGER, bg_color VARCHAR (10), font_color VARCHAR (10) )";
-        $createTasksTable = "CREATE TABLE IF NOT EXISTS task (id SERIAL, config INTEGER REFERENCES user_config (user_id), text TEXT, status VARCHAR (10))";
+        $createConfigsTable = "CREATE TABLE IF NOT EXISTS user_config (
+    user_id INTEGER UNIQUE, 
+    speed INTEGER, 
+    bg_color VARCHAR (10), 
+    font_color VARCHAR (10) 
+                                       )";
+        $createTasksTable = "CREATE TABLE IF NOT EXISTS task (
+    id SERIAL, 
+    config INTEGER REFERENCES user_config (user_id), 
+    text TEXT, status VARCHAR (10)
+                                )";
         $createConfigsTableResult = $db->query($createConfigsTable);
         $createTasksTableResult = $db->query($createTasksTable);
         return $createConfigsTableResult && $createTasksTableResult;
     }
 
     /**
+     * Получает массив настроек
      * @param $userId
-     * @return mixed
+     * @return mixed Массив настроек или false
      */
     public function getConfigByUserId($userId)
     {
@@ -48,6 +58,11 @@ class DB
         return $statement->fetch(PDO::FETCH_ASSOC);
     }
 
+    /**
+     * Сохраняет настройки пользователя
+     * @param Config $config
+     * @return bool true в случае успеха, иначе - false
+     */
     public function saveConfig(Config $config): bool
     {
         if ($config->hasErrors()) {
@@ -70,6 +85,7 @@ class DB
     }
 
     /**
+     * Создает новое задание
      * @param int $userId
      * @param string $text
      * @return int
@@ -92,6 +108,10 @@ class DB
         return (int)$this->db->lastInsertId();
     }
 
+    /**
+     * Берет новое задание со статусом new и ставит статус in_process
+     * @return array|null
+     */
     public function getNewTask(): ?array
     {
         $this->db->exec("BEGIN");
@@ -108,6 +128,11 @@ class DB
         return null;
     }
 
+    /**
+     * Устанавливает статус done
+     * @param $taskId
+     * @return bool
+     */
     public function setTaskDone($taskId): bool
     {
         $statement = $this->db->prepare("UPDATE task SET status = 'done' WHERE id=:taskId");
