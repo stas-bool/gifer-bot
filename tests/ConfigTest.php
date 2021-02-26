@@ -16,6 +16,8 @@ class ConfigTest extends TestCase
     public static function setUpBeforeClass(): void
     {
         self::$db = DB::connect($_ENV['DSN'], $_ENV['DB_USER'], $_ENV['DB_PASSWORD']);
+        self::$db->query("DELETE FROM task");
+        self::$db->query("DELETE FROM user_config");
     }
 
     public function testGetConfig(): Config
@@ -42,12 +44,10 @@ class ConfigTest extends TestCase
         self::assertEquals("#FFD23D", $userConfig->getBgColor());
     }
 
-    /**
-     * @depends testGetConfig
-     * @param Config $userConfig
-     */
-    public function testSaveWrongData(Config $userConfig): void
+    public function testSaveWrongData(): void
     {
+        Config::deleteInstance();
+        $userConfig = Config::get(self::$userId, self::$db->getConfigByUserId(self::$userId));
         $userConfig->setBgColor('WRONG_FORMAT');
         $userConfig->setFontColor('WRONG_FORMAT');
         $userConfig->setSpeed(0);
