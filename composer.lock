@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "cb6f0ca164b936e63c1e35a0725998ca",
+    "content-hash": "2a7ed9a10639edf3d6043d88c3fb55b6",
     "packages": [
         {
             "name": "botman/botman",
@@ -1286,7 +1286,7 @@
             "time": "2020-11-03T10:15:05+00:00"
         },
         {
-            "name": "stat-bool/gifer",
+            "name": "stas-bool/gifer",
             "version": "0.1",
             "source": {
                 "type": "git",
