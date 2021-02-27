@@ -4,8 +4,8 @@
 namespace Test;
 
 
-use Bot\Config;
 use Bot\DB;
+use Bot\model\Config;
 use PHPUnit\Framework\TestCase;
 use RuntimeException;
 
@@ -34,7 +34,7 @@ class DBTest extends TestCase
         $dbConfig = self::$db->getConfigByUserId(self::$userId);
         self::assertFalse($dbConfig);
 
-        $config = Config::get(self::$userId, $dbConfig);
+        $config = Config::getInstance(self::$userId, $dbConfig);
         self::assertTrue(self::$db->saveConfig($config), 'Не удалось создать конфигурацию пользователя');
     }
 
@@ -46,8 +46,8 @@ class DBTest extends TestCase
     public function testNewTask(): int
     {
         $configFromDb = self::$db->getConfigByUserId(self::$userId);
-        $userConfig = Config::get(self::$userId, $configFromDb);
-        $newTaskId = self::$db->newTask($userConfig->getUserId(), 'test text');
+        $userConfig = Config::getInstance(self::$userId, $configFromDb);
+        $newTaskId = self::$db->newTask($userConfig->getId(), 'test text');
         self::assertIsInt($newTaskId, "Не удалось создать задание");
         return $newTaskId;
     }
@@ -81,7 +81,7 @@ class DBTest extends TestCase
      */
     public function testSaveWrongData(): void
     {
-        $config = Config::get(self::$userId, self::$db->getConfigByUserId(self::$userId));
+        $config = Config::getInstance(self::$userId, self::$db->getConfigByUserId(self::$userId));
         $config->setBgColor('WRONG_FORMAT');
         $config->setFontColor('WRONG_FORMAT');
         $config->setSpeed('WRONG_FORMAT');
@@ -96,10 +96,10 @@ class DBTest extends TestCase
     {
         $text = $this->generateRandomString();
         $configFromDb = self::$db->getConfigByUserId(self::$userId);
-        $userConfig = Config::get(self::$userId, $configFromDb);
+        $userConfig = Config::getInstance(self::$userId, $configFromDb);
 
         $this->expectException(RuntimeException::class);
-        self::$db->newTask($userConfig->getUserId(), $text);
+        self::$db->newTask($userConfig->getId(), $text);
     }
 
     private function generateRandomString($length = 301): string

@@ -1,11 +1,10 @@
 <?php
 
-namespace Bot;
+namespace Bot\model;
 
 
-class Config
+class Config extends Base\DomainObject
 {
-    private $userId;
     private $speed = 5;
     private $bgColor = '#000000';
     private $fontColor = '#FFFFFF';
@@ -14,22 +13,30 @@ class Config
 
     /**
      * Config constructor.
-     * @param integer $userId
-     * @param null|false|array $config
+     * @param integer $id
+     * @param null|false|array $rawConfig
      */
-    private function __construct(int $userId, $config = null)
+    private function __construct(int $id, $rawConfig = null)
     {
-        $this->userId = $userId;
-        if ($config !== false && !is_null($config)) {
-            $this->speed = $config['speed'];
-            $this->bgColor = $config['bg_color'];
-            $this->fontColor = $config['font_color'];
+        parent::__construct($id);
+        if ($rawConfig !== false && !is_null($rawConfig)) {
+            $this->speed = $rawConfig['speed'];
+            $this->bgColor = $rawConfig['bg_color'];
+            $this->fontColor = $rawConfig['font_color'];
         }
     }
 
-    public function getUserId(): int
+    /**
+     * @param int $userId
+     * @param null|false|array $rawConfig
+     * @return Config
+     */
+    public static function getInstance(int $userId, $rawConfig = null): Config
     {
-        return $this->userId;
+        if (is_null(self::$instance)) {
+            self::$instance = new self($userId, $rawConfig);
+        }
+        return self::$instance;
     }
 
     public function getBgColor(): string
@@ -83,18 +90,9 @@ class Config
     }
 
     /**
-     * @param int $userId
-     * @param null|false|array $config
-     * @return Config
+     * Возвращает массив ошибок и очищает их
+     * @return array
      */
-    public static function get(int $userId, $config = null): Config
-    {
-        if (is_null(self::$instance)) {
-            self::$instance = new Config($userId, $config);
-        }
-        return self::$instance;
-    }
-
     public function getErrors(): array
     {
         $errors = $this->errors;

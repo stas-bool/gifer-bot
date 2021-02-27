@@ -2,6 +2,7 @@
 
 namespace Bot;
 
+use Bot\model\Config;
 use PDO;
 use RuntimeException;
 
@@ -31,7 +32,7 @@ class DB
     private static function createTables($db): bool
     {
         $createConfigsTable = "CREATE TABLE IF NOT EXISTS user_config (
-    user_id INTEGER UNIQUE, 
+    id INTEGER UNIQUE, 
     speed INTEGER, 
     bg_color VARCHAR (10), 
     font_color VARCHAR (10) 
@@ -75,7 +76,7 @@ class DB
                 'DO UPDATE SET speed=:speed, bg_color=:bg_color, font_color=:font_color'
         );
         $result = $statement->execute([
-            ':userId' => $config->getUserId(),
+            ':userId' => $config->getId(),
             ':speed' => $config->getSpeed(),
             ':bg_color' => $config->getBgColor(),
             ':font_color' => $config->getFontColor(),
