@@ -40,7 +40,7 @@ class DB
         $createTasksTable = "CREATE TABLE IF NOT EXISTS task (
     id SERIAL, 
     config INTEGER REFERENCES config (id), 
-    text TEXT, status VARCHAR (10)
+    text TEXT, status SMALLINT
                                 )";
         $createConfigsTableResult = $db->query($createConfigsTable);
         $createTasksTableResult = $db->query($createTasksTable);

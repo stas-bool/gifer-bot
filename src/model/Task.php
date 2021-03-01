@@ -9,13 +9,13 @@ use Bot\model\Mapper\TaskMapper;
 
 class Task extends Base\DomainObject
 {
-    public const STATUS_NEW = 1;
-    public const STATUS_DONE = 0;
-    private $text;
-    private $status;
-    private $config;
+    public const STATUS_NEW = 0;
+    public const STATUS_DONE = 1;
+    private string $text;
+    private int $status;
+    private int $config;
 
-    public function __construct($id, $text, $config, $status = 'new')
+    public function __construct($id, $text, $config, $status = self::STATUS_NEW)
     {
         parent::__construct($id);
         $this->text = $text;
@@ -23,12 +23,12 @@ class Task extends Base\DomainObject
         $this->status = $status;
     }
 
-    public function getStatus(): string
+    public function getStatus(): int
     {
         return $this->status;
     }
 
-    public function setStatus(string $status): Task
+    public function setStatus(int $status): Task
     {
         $this->status = $status;
         return $this;

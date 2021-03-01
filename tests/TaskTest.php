@@ -49,19 +49,19 @@ class TaskTest extends TestCase
     {
 
         $task = Task::find()->byId($taskId);
-        $task->setStatus("done");
+        $task->setStatus(Task::STATUS_DONE);
         $task->update();
 
         $task = Task::find()->byId($taskId);
-        self::assertEquals("done", $task->getStatus());
+        self::assertEquals(Task::STATUS_DONE, $task->getStatus());
     }
 
     /**
      * @depends testUpdateTaskStatus
      */
-    public function testFindAll()
+    public function testFindAll(): void
     {
-        $tasks = Task::find()->where(['status' => 'done'])->all();
+        $tasks = Task::find()->where(['status' => Task::STATUS_DONE])->all();
         self::assertInstanceOf(Task::class, $tasks->current());
         foreach ($tasks as $task) {
             self::assertInstanceOf(Task::class, $task);
