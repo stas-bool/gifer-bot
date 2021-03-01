@@ -20,7 +20,9 @@ abstract class Mapper
     public function __construct()
     {
         $registry = Registry::getInstance();
-        $this->pdo = $registry->pdo;
+        if (!is_null($registry)) {
+            $this->pdo = $registry->pdo;
+        }
     }
 
     public function where($params): Mapper
