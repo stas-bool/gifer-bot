@@ -4,20 +4,39 @@
 namespace Bot\model\Base;
 
 
+use Bot\Registry;
+use Generator;
 use PDO;
 use PDOStatement;
 
 abstract class Mapper
 {
-    protected $pdo;
+    protected PDO $pdo;
+    protected string $selectSql;
+    protected PDOStatement $selectStmt;
 
-    public function __construct(PDO $pdo)
+    public function __construct($tableName)
     {
-        $this->pdo = $pdo;
+        $registry = Registry::getInstance();
+        $this->pdo = $registry->pdo;
+        $this->selectSql = "SELECT * FROM $tableName";
+        $this->selectStmt = $this->pdo->prepare($this->selectSql);
     }
 
-    public function find($id)
+    public function where($params): Mapper
     {
+        $this->selectSql .= " WHERE ";
+        array_walk($params, static function (&$value, $column) {
+            $value = "$column = '$value'";
+        });
+        $this->selectSql .= implode(" AND ", $params);
+        $this->selectStmt = $this->pdo->prepare($this->selectSql);
+        return $this;
+    }
+
+    public function byId($id): ?DomainObject
+    {
+        $this->selectStmt = $this->pdo->prepare($this->selectSql . " WHERE id = :id");
         $this->selectStmt()->execute([':id' => $id]);
         $row = $this->selectStmt()->fetch(PDO::FETCH_ASSOC);
         $this->selectStmt()->closeCursor();
@@ -29,20 +48,44 @@ abstract class Mapper
         return $this->createObject($row);
     }
 
+    public function one(): ?DomainObject
+    {
+        $row = $this->selectStmt()->fetch(PDO::FETCH_ASSOC);
+        $this->selectStmt()->closeCursor();
+        if (!is_array($row) || !isset($row['id'])) {
+            return null;
+        }
+
+        return $this->createObject($row);
+    }
+
+    public function all(): Generator
+    {
+        $this->selectStmt()->execute();
+        while ($row = $this->selectStmt()->fetch(PDO::FETCH_ASSOC)) {
+            yield $this->createObject($row);
+        }
+    }
+
     public function createObject($row): DomainObject
     {
         $obj = $this->doCreateObject($row);
         return $obj;
     }
 
-    public function insert(DomainObject $object)
+    public function insert(DomainObject $object): void
     {
         $this->doInsert($object);
+    }
+
+    protected function selectStmt(): PDOStatement
+    {
+        return $this->selectStmt;
     }
 
     abstract public function update(DomainObject $object);
     abstract protected function doCreateObject(array $raw): DomainObject;
     abstract protected function doInsert(DomainObject $object);
-    abstract protected function selectStmt(): PDOStatement;
     abstract protected function targetClass(): string;
+    abstract protected static function getTableName(): string;
 }

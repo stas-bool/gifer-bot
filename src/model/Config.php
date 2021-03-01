@@ -3,6 +3,9 @@
 namespace Bot\model;
 
 
+use Bot\model\Base\DomainObject;
+use Bot\model\Base\Mapper;
+
 class Config extends Base\DomainObject
 {
     private $speed = 5;
@@ -114,5 +117,30 @@ class Config extends Base\DomainObject
     {
         self::$instance = null;
         return true;
+    }
+
+    protected function getTableName(): string
+    {
+        return 'config';
+    }
+
+    public static function getMapper(): Mapper
+    {
+        // TODO: Implement getMapper() method.
+    }
+
+    public static function find(): Mapper
+    {
+        // TODO: Implement find() method.
+    }
+
+    public function insert(): DomainObject
+    {
+        // TODO: Implement insert() method.
+    }
+
+    public function update(): DomainObject
+    {
+        // TODO: Implement update() method.
     }
 }

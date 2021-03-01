@@ -28,4 +28,10 @@ abstract class DomainObject
     {
         $this->id = $id;
     }
+
+    abstract public static function getMapper(): Mapper;
+    abstract protected function getTableName(): string;
+    abstract public static function find(): Mapper;
+    abstract public function insert(): DomainObject;
+    abstract public function update(): DomainObject;
 }
