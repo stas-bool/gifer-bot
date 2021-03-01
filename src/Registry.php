@@ -13,8 +13,8 @@ use PDO;
  */
 class Registry
 {
-    private static $instance;
-    private $values = [];
+    private static ?Registry $instance = null;
+    private array $values = [];
 
     public function __get($name)
     {

@@ -5,49 +5,48 @@ namespace Test;
 
 
 use Bot\model\Config;
-use Bot\DB;
+use Bot\Registry;
+use PDO;
 use PHPUnit\Framework\TestCase;
 
 class ConfigTest extends TestCase
 {
-    private static $userId = 132763295;
-    protected static $db;
+    private static int $userId = 132763295;
 
     public static function setUpBeforeClass(): void
     {
-        self::$db = DB::connect($_ENV['DSN'], $_ENV['DB_USER'], $_ENV['DB_PASSWORD']);
-        self::$db->query("DELETE FROM task");
-        self::$db->query("DELETE FROM user_config");
+        $pdo = new PDO($_ENV['DSN'], $_ENV['DB_USER'], $_ENV['DB_PASSWORD']);
+        $registry = Registry::getInstance();
+        $registry->pdo = $pdo;
+        $pdo->exec("DELETE FROM task");
+        $pdo->exec("DELETE FROM user_config");
     }
 
-    public function testGetConfig(): Config
+    public function testCreateConfig(): Config
     {
-        $userConfig = Config::getInstance(self::$userId, self::$db->getConfigByUserId(self::$userId));
-        self::assertNotFalse($userConfig);
+        $userConfig = new Config(self::$userId);
+        $userConfig->insert();
+        self::assertNotNull($userConfig->getSpeed());
+        self::assertNotNull($userConfig->getFontColor());
+        self::assertNotNull($userConfig->getBgColor());
         return $userConfig;
     }
 
     /**
-     * @depends testGetConfig
-     * @param Config $userConfig
+     * @depends testCreateConfig
      */
-    public function testSave(Config $userConfig): void
+    public function testGetConfig(): void
     {
-        $userConfig->setFontColor("#C39F40");
-        $userConfig->setBgColor("#FFD23D");
-        $userConfig->setSpeed(10);
-        self::assertTrue(self::$db->saveConfig($userConfig));
-        Config::deleteInstance();
-        $userConfig = Config::getInstance(self::$userId, self::$db->getConfigByUserId(self::$userId));
-        self::assertEquals(10, $userConfig->getSpeed());
-        self::assertEquals("#C39F40", $userConfig->getFontColor());
-        self::assertEquals("#FFD23D", $userConfig->getBgColor());
+        $userConfig = Config::find()->byId(self::$userId);
+        self::assertInstanceOf(Config::class, $userConfig);
     }
 
+    /**
+     * @depends testCreateConfig
+     */
     public function testSaveWrongData(): void
     {
-        Config::deleteInstance();
-        $userConfig = Config::getInstance(self::$userId, self::$db->getConfigByUserId(self::$userId));
+        $userConfig = Config::find()->byId(self::$userId);
         $userConfig->setBgColor('WRONG_FORMAT');
         $userConfig->setFontColor('WRONG_FORMAT');
         $userConfig->setSpeed(0);

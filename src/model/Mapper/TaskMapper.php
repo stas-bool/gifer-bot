@@ -7,23 +7,25 @@ namespace Bot\model\Mapper;
 use Bot\model\Base\DomainObject;
 use Bot\model\Base\Mapper;
 use Bot\model\Task;
-use Bot\Registry;
+use PDOStatement;
 
 class TaskMapper extends Mapper
 {
-    private $updateStmt;
-    private $insertStmt;
+    protected PDOStatement $updateStmt;
+    protected PDOStatement $insertStmt;
+    protected PDOStatement $selectStmt;
 
     public function __construct()
     {
-        parent::__construct(self::getTableName());
-        $this->pdo = Registry::getInstance()->pdo;
+        parent::__construct();
         $this->updateStmt = $this->pdo->prepare(
             "UPDATE task set text=:text, status=:status WHERE id=:id"
         );
         $this->insertStmt = $this->pdo->prepare(
             "INSERT INTO task (text, status, config) VALUES (:text, :status, :config)"
         );
+        $this->selectSql = "SELECT * FROM task";
+        $this->selectStmt = $this->pdo->prepare($this->selectSql);
     }
 
     protected function targetClass(): string
@@ -36,7 +38,7 @@ class TaskMapper extends Mapper
         return new Task($raw['id'], $raw['text'], $raw['config'], $raw['status']);
     }
 
-    protected function doInsert(DomainObject $object)
+    protected function doInsert(DomainObject $object): void
     {
         $values = [
             ':text' => $object->getText(),
@@ -55,10 +57,5 @@ class TaskMapper extends Mapper
             ':id' => $object->getId()
         ];
         return $this->updateStmt->execute($values);
-    }
-
-    protected static function getTableName(): string
-    {
-        return "task";
     }
 }

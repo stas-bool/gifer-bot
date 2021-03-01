@@ -29,9 +29,9 @@ class DB
         throw new RuntimeException("Не удалось подключиться к базе");
     }
 
-    private static function createTables($db): bool
+    public static function createTables(PDO $db): bool
     {
-        $createConfigsTable = "CREATE TABLE IF NOT EXISTS user_config (
+        $createConfigsTable = "CREATE TABLE IF NOT EXISTS config (
     id INTEGER UNIQUE, 
     speed INTEGER, 
     bg_color VARCHAR (10), 
@@ -39,7 +39,7 @@ class DB
                                        )";
         $createTasksTable = "CREATE TABLE IF NOT EXISTS task (
     id SERIAL, 
-    config INTEGER REFERENCES user_config (user_id), 
+    config INTEGER REFERENCES config (id), 
     text TEXT, status VARCHAR (10)
                                 )";
         $createConfigsTableResult = $db->query($createConfigsTable);

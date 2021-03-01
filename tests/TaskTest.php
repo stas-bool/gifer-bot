@@ -6,18 +6,19 @@ namespace Test;
 
 use Bot\model\Task;
 use Bot\Registry;
+use PDO;
 use PHPUnit\Framework\TestCase;
 
-class TestTask extends TestCase
+class TaskTest extends TestCase
 {
     private static $userId = 132763295;
 
     public static function setUpBeforeClass(): void
     {
-        $pdo = new \PDO($_ENV['DSN'], $_ENV['DB_USER'], $_ENV['DB_PASSWORD']);
+        $pdo = new PDO($_ENV['DSN'], $_ENV['DB_USER'], $_ENV['DB_PASSWORD']);
         $registry = Registry::getInstance();
         $registry->pdo = $pdo;
-        $pdo->query("DELETE FROM task");
+        $pdo->exec("DELETE FROM task");
     }
 
     public function testCreateNewTask(): int

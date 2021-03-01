@@ -9,6 +9,8 @@ use Bot\model\Mapper\TaskMapper;
 
 class Task extends Base\DomainObject
 {
+    public const STATUS_NEW = 1;
+    public const STATUS_DONE = 0;
     private $text;
     private $status;
     private $config;
@@ -48,14 +50,9 @@ class Task extends Base\DomainObject
         return $this->config;
     }
 
-    public static function getMapper(): Mapper
+    protected static function getMapper(): Mapper
     {
         return new TaskMapper();
-    }
-
-    public function getTableName(): string
-    {
-        return "task";
     }
 
     public static function find(): Mapper

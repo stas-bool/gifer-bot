@@ -5,41 +5,28 @@ namespace Bot\model;
 
 use Bot\model\Base\DomainObject;
 use Bot\model\Base\Mapper;
+use Bot\model\Mapper\ConfigMapper;
 
 class Config extends Base\DomainObject
 {
-    private $speed = 5;
-    private $bgColor = '#000000';
-    private $fontColor = '#FFFFFF';
-    private $errors = [];
-    private static $instance;
+    private ?int $speed = 5;
+    private ?string $bgColor = '#000000';
+    private ?string $fontColor = '#FFFFFF';
+    private array $errors = [];
 
     /**
      * Config constructor.
      * @param integer $id
-     * @param null|false|array $rawConfig
+     * @param null|integer $speed
+     * @param null|string $bgColor
+     * @param null|string $fontColor
      */
-    private function __construct(int $id, $rawConfig = null)
+    public function __construct(int $id, $speed = null, $bgColor = null, $fontColor = null)
     {
         parent::__construct($id);
-        if ($rawConfig !== false && !is_null($rawConfig)) {
-            $this->speed = $rawConfig['speed'];
-            $this->bgColor = $rawConfig['bg_color'];
-            $this->fontColor = $rawConfig['font_color'];
-        }
-    }
-
-    /**
-     * @param int $userId
-     * @param null|false|array $rawConfig
-     * @return Config
-     */
-    public static function getInstance(int $userId, $rawConfig = null): Config
-    {
-        if (is_null(self::$instance)) {
-            self::$instance = new self($userId, $rawConfig);
-        }
-        return self::$instance;
+        $this->speed = $speed ?? $this->speed;
+        $this->bgColor = $bgColor ?? $this->bgColor;
+        $this->fontColor = $fontColor ?? $this->fontColor;
     }
 
     public function getBgColor(): string
@@ -113,34 +100,27 @@ class Config extends Base\DomainObject
         return preg_match('/^#[0-9A-F]{6}$/', $hexColor) === 1;
     }
 
-    public static function deleteInstance(): bool
+    protected static function getMapper(): Mapper
     {
-        self::$instance = null;
-        return true;
-    }
-
-    protected function getTableName(): string
-    {
-        return 'config';
-    }
-
-    public static function getMapper(): Mapper
-    {
-        // TODO: Implement getMapper() method.
+        return new ConfigMapper();
     }
 
     public static function find(): Mapper
     {
-        // TODO: Implement find() method.
+        return self::getMapper();
     }
 
     public function insert(): DomainObject
     {
-        // TODO: Implement insert() method.
+        $mapper = self::getMapper();
+        $mapper->insert($this);
+        return $this;
     }
 
     public function update(): DomainObject
     {
-        // TODO: Implement update() method.
+        $mapper = self::getMapper();
+        $mapper->update($this);
+        return $this;
     }
 }

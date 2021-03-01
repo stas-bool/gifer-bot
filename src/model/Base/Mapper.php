@@ -13,14 +13,14 @@ abstract class Mapper
 {
     protected PDO $pdo;
     protected string $selectSql;
+    protected PDOStatement $updateStmt;
+    protected PDOStatement $insertStmt;
     protected PDOStatement $selectStmt;
 
-    public function __construct($tableName)
+    public function __construct()
     {
         $registry = Registry::getInstance();
         $this->pdo = $registry->pdo;
-        $this->selectSql = "SELECT * FROM $tableName";
-        $this->selectStmt = $this->pdo->prepare($this->selectSql);
     }
 
     public function where($params): Mapper
@@ -83,9 +83,8 @@ abstract class Mapper
         return $this->selectStmt;
     }
 
-    abstract public function update(DomainObject $object);
+    abstract public function update(DomainObject $object): bool;
     abstract protected function doCreateObject(array $raw): DomainObject;
-    abstract protected function doInsert(DomainObject $object);
+    abstract protected function doInsert(DomainObject $object): void;
     abstract protected function targetClass(): string;
-    abstract protected static function getTableName(): string;
 }
