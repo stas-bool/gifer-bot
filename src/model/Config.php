@@ -80,14 +80,12 @@ class Config extends Base\DomainObject
     }
 
     /**
-     * Возвращает массив ошибок и очищает их
+     * Возвращает массив ошибок
      * @return array
      */
     public function getErrors(): array
     {
-        $errors = $this->errors;
-        $this->errors = [];
-        return $errors;
+        return $this->errors;
     }
 
     public function hasErrors(): bool
@@ -110,8 +108,22 @@ class Config extends Base\DomainObject
         return self::getMapper();
     }
 
+    public static function findOrCreateDefault($id): Config
+    {
+        $mapper = self::getMapper();
+        $config = $mapper->byId($id);
+        if (is_null($config)) {
+            $config = new self($id);
+            $config->insert();
+        }
+        return $config;
+    }
+
     public function insert(): DomainObject
     {
+        if ($this->hasErrors()) {
+            throw new \RuntimeException(implode("\n", $this->getErrors()));
+        }
         $mapper = self::getMapper();
         $mapper->insert($this);
         return $this;
@@ -119,6 +131,9 @@ class Config extends Base\DomainObject
 
     public function update(): DomainObject
     {
+        if ($this->hasErrors()) {
+            throw new \RuntimeException(implode("\n", $this->getErrors()));
+        }
         $mapper = self::getMapper();
         $mapper->update($this);
         return $this;
