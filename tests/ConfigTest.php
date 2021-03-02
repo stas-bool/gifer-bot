@@ -53,5 +53,15 @@ class ConfigTest extends TestCase
 
         self::assertTrue($userConfig->hasErrors());
         self::assertCount(3, $userConfig->getErrors());
+        $this->expectException(\RuntimeException::class);
+        $userConfig->update();
+    }
+
+    public function testFindOrCreate(): void
+    {
+        $userId = 666;
+        $config = Config::findOrCreateDefault($userId);
+        $configFromDb = Config::find()->byId($userId);
+        self::assertInstanceOf(Config::class, $configFromDb);
     }
 }
