@@ -29,7 +29,11 @@ abstract class Mapper
     {
         $this->selectSql .= " WHERE ";
         array_walk($params, static function (&$value, $column) {
-            $value = "$column = '$value'";
+            if (is_int($value)) {
+                $value = "$column = $value";
+            } else {
+                $value = "$column = '$value'";
+            }
         });
         $this->selectSql .= implode(" AND ", $params);
         $this->selectStmt = $this->pdo->prepare($this->selectSql);
