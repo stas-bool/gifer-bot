@@ -15,10 +15,9 @@ class TaskTest extends TestCase
 
     public static function setUpBeforeClass(): void
     {
-        $pdo = new PDO($_ENV['DSN'], $_ENV['DB_USER'], $_ENV['DB_PASSWORD']);
         $registry = Registry::getInstance();
-        $registry->pdo = $pdo;
-        $pdo->exec("DELETE FROM task");
+        $registry->pdo = new PDO($_ENV['DSN'], $_ENV['DB_USER'], $_ENV['DB_PASSWORD']);
+        $registry->pdo->exec("DELETE FROM task");
     }
 
     public function testCreateNewTask(): int
@@ -66,5 +65,13 @@ class TaskTest extends TestCase
         foreach ($tasks as $task) {
             self::assertInstanceOf(Task::class, $task);
         }
+    }
+
+    public function testFindByStatus(): void
+    {
+        $task = new Task(-1, 'test find by status', self::$userId);
+        $task->insert();
+        $taskFromDb = Task::find()->where(['status' => Task::STATUS_NEW])->one();
+        self::assertInstanceOf(Task::class, $taskFromDb);
     }
 }

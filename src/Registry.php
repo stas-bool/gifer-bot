@@ -36,7 +36,7 @@ class Registry
     /**
      * @return Registry
      */
-    public static function getInstance()
+    public static function getInstance(): Registry
     {
         if (is_null(self::$instance)) {
             self::$instance = new self();
