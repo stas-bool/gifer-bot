@@ -1,5 +1,6 @@
 <?php
 
+use Bot\DB;
 use Bot\model\Task;
 use Bot\Registry;
 use BotMan\BotMan\BotMan;
@@ -15,6 +16,7 @@ $dotenv = Dotenv\Dotenv::createImmutable(__DIR__.'/../config/');
 $dotenv->load();
 
 $pdo = new PDO($_ENV['DSN'], $_ENV['DB_USER'], $_ENV['DB_PASSWORD']);
+DB::createTables($pdo);
 $registry = Registry::getInstance();
 $registry->pdo = $pdo;
 
@@ -111,7 +113,6 @@ $botman->hears('(.*)', function (BotMan $bot, $text) use (&$db) {
     $bot->reply('Обрабатываю...');
     $userId = $bot->getUser()->getId();
     $config = Config::findOrCreateDefault($userId);
-    $db->newTask($userId, $text);
     $task = new Task(-1, $text, $config->getId());
     $task->insert();
 });
