@@ -8,6 +8,7 @@ use Bot\model\Config;
 use Bot\Registry;
 use PDO;
 use PHPUnit\Framework\TestCase;
+use RuntimeException;
 
 class ConfigTest extends TestCase
 {
@@ -19,7 +20,7 @@ class ConfigTest extends TestCase
         $registry = Registry::getInstance();
         $registry->pdo = $pdo;
         $pdo->exec("DELETE FROM task");
-        $pdo->exec("DELETE FROM user_config");
+        $pdo->exec("DELETE FROM config");
     }
 
     public function testCreateConfig(): Config
@@ -53,15 +54,30 @@ class ConfigTest extends TestCase
 
         self::assertTrue($userConfig->hasErrors());
         self::assertCount(3, $userConfig->getErrors());
-        $this->expectException(\RuntimeException::class);
+        $this->expectException(RuntimeException::class);
         $userConfig->update();
     }
 
     public function testFindOrCreate(): void
     {
         $userId = 666;
-        $config = Config::findOrCreateDefault($userId);
+        Config::findOrCreateDefault($userId);
         $configFromDb = Config::find()->byId($userId);
         self::assertInstanceOf(Config::class, $configFromDb);
+    }
+
+    public function testUpdateConfig(): void
+    {
+        $userId = 13;
+        $config = Config::findOrCreateDefault($userId);
+        $newSpeed = 10;
+        $newFontColor = "#FFFFFF";
+        $newBgColor = "#000000";
+        $config->setSpeed($newSpeed)->setFontColor($newFontColor)->setBgColor($newBgColor);
+        $config->update();
+        $configFromDb = Config::find()->byId($userId);
+        self::assertEquals($newSpeed, $configFromDb->getSpeed());
+        self::assertEquals($newFontColor, $configFromDb->getFontColor());
+        self::assertEquals($newBgColor, $configFromDb->getBgColor());
     }
 }
