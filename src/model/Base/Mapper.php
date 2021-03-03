@@ -36,7 +36,12 @@ abstract class Mapper
             }
         });
         $this->selectSql .= implode(" AND ", $params);
-        $this->selectStmt = $this->pdo->prepare($this->selectSql);
+        return $this;
+    }
+
+    public function forUpdate(): Mapper
+    {
+        $this->selectSql .= " FOR UPDATE SKIP LOCKED";
         return $this;
     }
 
@@ -56,6 +61,9 @@ abstract class Mapper
 
     public function one(): ?DomainObject
     {
+        $this->selectSql .= " LIMIT 1";
+        $this->selectStmt = $this->pdo->prepare($this->selectSql);
+        $this->selectStmt()->execute();
         $row = $this->selectStmt()->fetch(PDO::FETCH_ASSOC);
         $this->selectStmt()->closeCursor();
         if (!is_array($row) || !isset($row['id'])) {
@@ -67,6 +75,7 @@ abstract class Mapper
 
     public function all(): Generator
     {
+        $this->selectStmt = $this->pdo->prepare($this->selectSql);
         $this->selectStmt()->execute();
         while ($row = $this->selectStmt()->fetch(PDO::FETCH_ASSOC)) {
             yield $this->createObject($row);
