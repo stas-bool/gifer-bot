@@ -11,10 +11,6 @@ use PDOStatement;
 
 class TaskMapper extends Mapper
 {
-    protected PDOStatement $updateStmt;
-    protected PDOStatement $insertStmt;
-    protected PDOStatement $selectStmt;
-
     public function __construct()
     {
         parent::__construct();
@@ -25,7 +21,6 @@ class TaskMapper extends Mapper
             "INSERT INTO task (text, status, config) VALUES (:text, :status, :config)"
         );
         $this->selectSql = "SELECT * FROM task";
-        $this->selectStmt = $this->pdo->prepare($this->selectSql);
     }
 
     protected function targetClass(): string

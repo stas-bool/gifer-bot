@@ -21,7 +21,6 @@ class ConfigMapper extends Mapper
 VALUES (:id, :speed, :bgColor, :fontColor)"
         );
         $this->selectSql = "SELECT * FROM config";
-        $this->selectStmt = $this->pdo->prepare("SELECT FROM config");
     }
 
     public function update(DomainObject $object): bool
