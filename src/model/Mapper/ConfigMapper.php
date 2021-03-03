@@ -30,6 +30,7 @@ VALUES (:id, :speed, :bgColor, :fontColor)"
             ":speed" => $object->getSpeed(),
             ":bgColor" => $object->getBgColor(),
             ":fontColor" => $object->getFontColor(),
+            ":id" => $object->getId(),
         ];
         return $this->updateStmt->execute($values);
     }
