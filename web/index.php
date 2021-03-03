@@ -38,11 +38,10 @@ $botman->hears('/start', function (BotMan $bot) use (&$db) {
     }
     die();
 });
-$botman->hears('/set_speed(.*)', function (BotMan $bot, $speed) use (&$db) {
-    $speed = trim($speed);
+$botman->hears('/set_speed (\d+)', function (BotMan $bot, $speed) use (&$db) {
     $userId = $bot->getUser()->getId();
     $config = Config::findOrCreateDefault($userId);
-    $config->setSpeed($speed);
+    $config->setSpeed((int)$speed);
     if ($config->hasErrors()) {
         $bot->reply(implode("\n", $config->getErrors()));
     } else {
@@ -51,8 +50,7 @@ $botman->hears('/set_speed(.*)', function (BotMan $bot, $speed) use (&$db) {
     }
     die();
 });
-$botman->hears('/set_font_color(.*)', function (BotMan $bot, $fontColor) use (&$db) {
-    $fontColor = trim($fontColor);
+$botman->hears('/set_font_color (.*)', function (BotMan $bot, $fontColor) use (&$db) {
     $userId = $bot->getUser()->getId();
     $config = Config::findOrCreateDefault($userId);
     $config->setFontColor($fontColor);
@@ -64,8 +62,7 @@ $botman->hears('/set_font_color(.*)', function (BotMan $bot, $fontColor) use (&$
     }
     die();
 });
-$botman->hears('/set_bg_color(.*)', function (BotMan $bot, $bgColor) use (&$db) {
-    $bgColor = trim($bgColor);
+$botman->hears('/set_bg_color (.*)', function (BotMan $bot, $bgColor) use (&$db) {
     $userId = $bot->getUser()->getId();
     $config = Config::findOrCreateDefault($userId);
     $config->setBgColor($bgColor);
