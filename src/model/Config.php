@@ -95,7 +95,7 @@ class Config extends Base\DomainObject
 
     private function colorInHexFormat($hexColor): bool
     {
-        return preg_match('/^#[0-9A-F]{6}$/', $hexColor) === 1;
+        return preg_match('/^#[0-9A-Fa-f]{6}$/', $hexColor) === 1;
     }
 
     protected static function getMapper(): Mapper
